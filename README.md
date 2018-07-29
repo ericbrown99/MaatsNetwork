@@ -1,4 +1,4 @@
- MaatsNetwork
+ Maats Network
  ======
  A 100% distributed, network of women/minority owned online stores made possible by combining Ethereum and IPFS.
  
