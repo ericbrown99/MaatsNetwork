@@ -11,6 +11,6 @@ Every store on Maats is P2P, creating a frictionless experience for both custome
  
  Why "Maats"?
  ------
-[Maat (or Ma'at)](https://en.wikipedia.org/wiki/Maat) is the Egyptian goddess of balance, order, harmony, morality, and justice. She is most well known for the "Feather of Ma'at" which is weighed against the hearts of travelers in the underworld after their deaths. 
+[Maat (or Ma'at)](https://en.wikipedia.org/wiki/Maat) is the Egyptian goddess of balance, order, harmony, morality, and justice. She is most well known for the "Feather of Ma'at" which is weighed against the hearts of travelers in the underworld.
  
 Maats Network strives to create equality and balance by supporting women and minority owners. Every purchase we make is a monetary vote for the values represented by the vendor. Vote for women and minority owners in our communities.   
