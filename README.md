@@ -1,6 +1,6 @@
  MaatsNetwork
  ======
- A distributed, online network of women/minority owned stores utilizing Ethereum and IPFS.
+ A 100% distributed, network of women/minority owned online stores made possible by combining Ethereum and IPFS.
  
  How does Maats Work?
  ------
