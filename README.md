@@ -1,6 +1,6 @@
  Maats Network
  ======
- A 100% distributed, network of women/minority owned online stores made possible by combining Ethereum and IPFS. Maats also keeps control of personal data in the hands of the users by using uPort for sovereign identity management. 
+ A 100% distributed network of women/minority owned online stores made possible by combining Ethereum and IPFS. Maats also keeps personal data in the hands of the users by using uPort for sovereign identity management. 
  
  How does Maats Work?
  ------
