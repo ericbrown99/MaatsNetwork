@@ -17,7 +17,8 @@ class App extends Component {
       contract: 0,
       account: null,
       paused: null,
-      increment: 0
+      increment: 0,
+      storeOwner: 0
     }
   }
 
@@ -116,14 +117,25 @@ class App extends Component {
     })
   }
 
+  newStoreOwnerHandler = (event) =>{
+    const contract = this.state.contract
+    const account = this.state.web3.eth.accounts[0]
+
+    let newOwnerAddr = document.querySelector('.newStoreOwner').value
+    contract.makeStoreOwner(newOwnerAddr, {from: account})
+    .then((result) =>{
+      this.setState({storeOwner: result + 1})
+
+    })
+
+  }
+
 
   ownerChangeHandler = (event) =>{
     const contract = this.state.contract
     const account = this.state.web3.eth.accounts[0]
 
     let ownerAddr = document.querySelector('.ownerInput').value
-    console.log(ownerAddr)
-
     contract.setMaatsOwner(ownerAddr, {from: account})
     .then(() => {
       this.setState({storageValue : ownerAddr})
@@ -156,6 +168,11 @@ class App extends Component {
               <br/>
               <button onClick={this.pausedHandler.bind(this)}> Pause Contract </button>
               <button onClick={this.unpausedHandler.bind(this)}> Unpause Contract </button>
+              <br/>
+              <br/>
+              <input className="newStoreOwner" type="text"/>
+              <button onClick={this.newStoreOwnerHandler.bind(this)}> Create Owner </button>
+              <p> There is a store owner: {this.state.storeOwner } </p>
             </div>
           </div>
         </main>
