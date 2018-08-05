@@ -69,14 +69,13 @@ class App extends Component {
         storeCoreInstance = instance
         //insert some logic to test contract below;
         //return owner?
-        console.log(storeCoreInstance)
+
 
 
         // Stores a given value, 5 by default.
         return storeCoreInstance.pause()
       }).then((isPaused) => {
         pause = isPaused
-        console.log(pause)
 
         return storeCoreInstance.maatsOwner()
       }).then((result) => {
@@ -92,6 +91,10 @@ class App extends Component {
   })
 }
 
+  startReadingContract(){
+  this.state.contract.pause()
+  .then((result) => {console.log(result)})
+}
 
   pausedHandler = (event) =>{
     const contract = this.state.contract
@@ -99,9 +102,12 @@ class App extends Component {
 
     contract._pause({from: account})
     .then(() => {
-      this.setState({paused: contract.pause()})
-    }).then(() =>{
-        this.setState({increment: 1})
+      contract.pause()
+      .then((result) => {
+        this.setState({paused: true})
+      }).then(() =>{
+          this.setState({increment: 1})
+      })
     })
   }
 
@@ -111,9 +117,13 @@ class App extends Component {
 
     contract._unpause({from: account})
     .then(() => {
-      this.setState({paused: contract.pause()})
-      }).then(() =>{
-        this.setState({increment: 2})
+      contract.pause()
+      .then((result) =>{
+        console.log(result);
+        this.setState({paused: false})
+        }).then(() =>{
+          this.setState({increment: 2})
+      })
     })
   }
 
@@ -124,8 +134,8 @@ class App extends Component {
     let newOwnerAddr = document.querySelector('.newStoreOwner').value
     contract.makeStoreOwner(newOwnerAddr, {from: account})
     .then((result) =>{
-      this.setState({storeOwner: result + 1})
-
+      let newOwnerId = result.logs[0].args._storeOwnerAddress
+      this.setState({storeOwner: newOwnerId })
     })
 
   }
@@ -139,6 +149,72 @@ class App extends Component {
     contract.setMaatsOwner(ownerAddr, {from: account})
     .then(() => {
       this.setState({storageValue : ownerAddr})
+    })
+  }
+
+  createAStoreHandler = (event) =>{
+    const contract = this.state.contract
+    const account = this.state.web3.eth.accounts[0]
+    let storeName = document.querySelector('.NewStoreName').value
+
+    contract.createStore(storeName, {from: account})
+
+  }
+
+  StoreOpenHandler = (event) => {
+    const contract = this.state.contract
+    const account = this.state.web3.eth.accounts[0]
+
+    contract.openStore({from:account})
+    .then(()=>{
+      contract.isStoreOpen(account).then((result) => {console.log(result)})
+    })
+  }
+
+
+  isStoreOpenHandler = (event) =>{
+    const contract = this.state.contract
+    const account = this.state.web3.eth.accounts[0]
+
+    contract.isStoreOpen(account).then((result) =>{console.log(result)})
+  }
+
+  NewProductHandler = (event) =>{
+    const contract = this.state.contract
+    const account = this.state.web3.eth.accounts[0]
+    let productPrice = document.querySelector('.NewSetPriceProduct').value
+    console.log(productPrice)
+    let initialInventory = document.querySelector('.initialProductInventory').value
+    console.log(initialInventory)
+
+    productPrice = parseInt(productPrice,10)
+    initialInventory = parseInt(initialInventory,10)
+
+    contract.createSetPriceProduct(productPrice,initialInventory,{from:account})
+  }
+
+  CheckProductExistsHandler = (event) => {
+    const contract = this.state.contract
+    const account = this.state.web3.eth.accounts[0]
+    contract.getProductExists(account,{from: account}).then((result) => {console.log(result)})
+  }
+
+  currentInventoryHandler = (event) => {
+    const contract = this.state.contract
+    const account = this.state.web3.eth.accounts[0]
+
+    contract.getCurrentInventory(account,{from:account}).then((result) => {console.log(result.c[0])})
+  }
+
+  purchaseProductHandler = (event) => {
+    const contract = this.state.contract
+    const account = this.state.web3.eth.accounts[0]
+    //const storeName = document.querySelector(".storeName").value
+    const value1 = this.state.web3.toWei(2,"ether")
+
+    contract.buyItem(0,"Bossy", {value: value1}, {from: account})
+    .then(() =>{
+      contract.getPurchase(account, {from:account}).then((result) => {console.log(result)})
     })
   }
 
@@ -173,6 +249,36 @@ class App extends Component {
               <input className="newStoreOwner" type="text"/>
               <button onClick={this.newStoreOwnerHandler.bind(this)}> Create Owner </button>
               <p> There is a store owner: {this.state.storeOwner } </p>
+              <button onClick={this.startReadingContract.bind(this)}> reading</button>
+              <br/>
+              <br/>
+              <br/>
+              <input className="NewStoreName" type="text"/>
+              <button onClick={this.createAStoreHandler.bind(this)}> Create store </button>
+              <br/>
+              <br/>
+              <button onClick={this.StoreOpenHandler.bind(this)}> Open your store</button>
+              <button onClick={this.isStoreOpenHandler.bind(this)}> check if store open </button>
+              <br/>
+              <br/>
+              <p>Price of product
+              <input className="NewSetPriceProduct" type="text"/>
+              </p>
+              <p>Initial product inventory
+              <input className="initialProductInventory" type="text"/>
+              </p>
+              <br/>
+              <button onClick={this.NewProductHandler.bind(this)}> Create New Product </button>
+              <button onClick={this.CheckProductExistsHandler.bind(this)}> Check if owner has a product</button>
+              <br/>
+              <br/>
+              <button onClick={this.currentInventoryHandler.bind(this)}> Get Current Inventory</button>
+              <br/>
+              <br/>
+              <p> Purchase Product </p>
+              <p> storeName </p>
+              <input className="storeName" type="text"/>
+              <button onClick={this.purchaseProductHandler.bind(this)}> Purchase Product </button>
             </div>
           </div>
         </main>
