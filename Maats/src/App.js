@@ -125,8 +125,8 @@ class App extends Component {
           adminsTemp[i] = await storeCoreInstance.maatsAdmins(i, {from: accounts[0]});
         }
         return this.setState({admins: adminsTemp})
-    /*  }).catch(() =>{
-        console.log("error in instantiate contract")*/
+      }).catch(() =>{
+        console.log("error in instantiate contract")
       })
     })
   }
@@ -333,6 +333,9 @@ checkMaatsOwnerHandler () {
     .catch(() => {alert("Store " + StoreRemove + "COULDN'T be removed")})
   }
 
+/* *****
+/* Display any stores that are on the Maats Network
+/* ***** */
 
   displayStoresHandler = () => {
     const stores = this.state.stores;
@@ -371,7 +374,15 @@ checkMaatsOwnerHandler () {
     tempStores[index].render = true;
     this.setState({stores: tempStores})
 
+    // CHECK THIS HERE : Calling This.display handler again to auto render change
+    // without needing to reload the page
+    // not sure if it works!!! 
+    return(this.displayStoresHandler())
   }
+
+  /* *****
+  /* Render the results of computations
+  /* ***** */
 
   render() {
 
