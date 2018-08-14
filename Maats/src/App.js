@@ -164,11 +164,11 @@ checkMaatsOwnerHandler () {
           <div className="CurrentAdmins">
             <h3> Current Admins </h3>
             <ul>
-            <li>{admins[0] != 0 ? admins[0] : "empty"}</li>
-            <li>{admins[1] != 0 ? admins[1] : "empty"}</li>
-            <li>{admins[2] != 0 ? admins[2] : "empty"}</li>
-            <li>{admins[3] != 0 ? admins[3] : "empty"}</li>
-            <li>{admins[4] != 0 ? admins[4] : "empty"}</li>
+              <li>{admins[0] != 0 ? admins[0] : "empty"}</li>
+              <li>{admins[1] != 0 ? admins[1] : "empty"}</li>
+              <li>{admins[2] != 0 ? admins[2] : "empty"}</li>
+              <li>{admins[3] != 0 ? admins[3] : "empty"}</li>
+              <li>{admins[4] != 0 ? admins[4] : "empty"}</li>
             </ul>
           </div>
           <div className="changeOwner">
@@ -376,7 +376,7 @@ checkMaatsOwnerHandler () {
 
     // CHECK THIS HERE : Calling This.display handler again to auto render change
     // without needing to reload the page
-    // not sure if it works!!! 
+    // not sure if it works!!!
     return(this.displayStoresHandler())
   }
 

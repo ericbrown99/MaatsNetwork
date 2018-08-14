@@ -61,19 +61,8 @@ class Store extends Component {
 
   checkStoreOwnerHandler = () => {
     // render owner functions if its the owner
-  }
-
-  /* *****
-  /* Functions for checkStoreOwnerHandler
-  /* ***** */
-
-
-
-
-
-  checkStoreAdminHandler = () => {
-    // render functions for admins/owner if they are current account
     const storeName = this.state.storeName;
+    const admins = this.state.storeAdmins;
 
     if(this.state.account === this.state.storeOwner){
       return(
@@ -96,6 +85,16 @@ class Store extends Component {
                 Confirm Remove Admin
               </button>
             </div>
+            <div className="currentStoreAdmins">
+              <h2> Your current admins </h2>
+              <ul>
+                <li>{admins[0] != 0 ? admins[0] : "empty"}</li>
+                <li>{admins[1] != 0 ? admins[1] : "empty"}</li>
+                <li>{admins[2] != 0 ? admins[2] : "empty"}</li>
+                <li>{admins[3] != 0 ? admins[3] : "empty"}</li>
+                <li>{admins[4] != 0 ? admins[4] : "empty"}</li>
+              </ul>
+            </div>
             <div className="ChangeProductPrice">
               <h2> Change the price of an existing Product </h2>
               <p> Note: {"you can't change the price of an auction product"} </p>
@@ -108,13 +107,69 @@ class Store extends Component {
                 <input className="priceChangeNewPrice" type="text"/>
               </div>
               <button onClick={this.changeProductPriceHandler.bind(this)}>
-                Confirm Price Change 
+                Confirm Price Change
               </button>
             </div>
           </div>
         </div>
       )
     }
+  }
+
+  /* *****
+  /* Functions for checkStoreOwnerHandler
+  /* ***** */
+
+  createStoreAdminHandler = () => {
+    // add an admin to the store
+    const contract = this.state.contract
+    const account = this.state.account
+    let newStoreAdmin = document.querySelector(".StoreAdminAddressAdd").value
+
+    contract.createStoreAdmin(newStoreAdmin, {from: account})
+    .then(() => {alert("New Store Admin Created")})
+    .catch(() => {alert("Couldn't create new store Admin. Ensure there is space for a new admin and that enough gas was sent with transaction")})
+  }
+
+  removeStoreAdminHandler = () => {
+    // remove an admin from the store
+    const contract = this.state.contract
+    const account = this.state.account
+    let oldStoreAdmin = document.querySelector(".StoreAdminAddressRemove").value
+
+    contract.removeStoreAdmin(oldStoreAdmin, {from:account})
+    .then(() => {alert("Old Admin Removed")})
+    .catch(() =>{alert("Couldn't remove the old admin. Ensure that the address is correct and that enough gas was sent with the transaction")} )
+  }
+
+  changeProductPriceHandler = () =>{
+    // change the price of an existing product
+    const contract = this.state.contract
+    const account = this.state.account
+    let productId = parseInt(document.querySelector(".priceChangeProductId").value);
+    let newPrice = parseInt(document.querySelector(".priceChangeNewPrice").value);
+
+    contract.changePrice(newPrice, productId, {from: account})
+    .then(() => alert("Price changed to " + newPrice + " successfully"))
+    .catch(() => alert("Couldn't change price. Ensure that the productId is correct and that enough gas was sent with the transaction"));
+  }
+
+
+  checkStoreAdminHandler = () => {
+    // render functions for admins/owner if they are current account
+    const account = this.state.account
+    const admins = this.state.storeAdmins
+    let res = false
+
+    // check if account is an admin
+    for(let item in admins){
+      if(admins[item] === account){
+        res = true
+      }
+    }
+    // check if account is owner who also has access to owner functions
+    account === this.state.storeOwner ? res = true : null ;
+
   }
 
   /* *****
