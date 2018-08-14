@@ -18,7 +18,7 @@ contract StoreAccessControl{
   event LogAdminRevoked(address indexed revokedAdmin);
 
   /// @dev There are at most 5 admins managing the Maats Network
-  address[5] maatsAdmins;
+  address[5] public maatsAdmins;
 
   /// @dev Determine if and address is a network admin
   mapping (address => bool) isMaatsAdmin;

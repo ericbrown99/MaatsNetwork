@@ -14,9 +14,7 @@ contract StoreBase is StoreAccessControl{
   event LogStoreOwnerRemoved(address indexed _storeOwner);
   event LogStoreClosed(address indexed _ownerAddress, string _oldStoreName);
 
-  /// @dev array of StoreOwners to record the addresses and reviews of owners
-  /// couldn't you just turn this into a mapping from address to review?
-  StoreOwner[] public storeOwners;
+  Store[] allStores;
 
   /// @dev The Store struct is used to represent all stores in the Maats Network.
   struct Store{
@@ -33,7 +31,7 @@ contract StoreBase is StoreAccessControl{
   }
 
   /// @dev ake owner array and create ownerId to improve access to stores
-  /// create mapping which pairs stores to storeId's
+
   struct StoreOwner{
     address ownerAddress; //this controls functionality, make sure not accessible
     uint128 ownerRanking;
@@ -67,7 +65,7 @@ contract StoreBase is StoreAccessControl{
 
   /// @dev Need a way to access the address of the store owner for functions
   /// where store admins are acting upon the store and not the owner.
-  mapping(string => address)  StoreNameToOwner;
+  mapping(string => address) public  StoreNameToOwner;
 
   /// @dev Used to ensure an address isn't registered as an owner multiple times
   /// accessed when loading a page to allow access to owner only functionality.
@@ -84,6 +82,8 @@ contract StoreBase is StoreAccessControl{
   /// @dev give admins access to stores instead of requiring the owner address
   mapping (address => Store) storeAdminToStore;
 
+
+
   /// @dev Function for testing store creation and removal since
   /// mappings with dynamic keys don't yet have public getter functions
   function getStoreExists(string _storeName)public constant returns(bool){
@@ -95,11 +95,10 @@ contract StoreBase is StoreAccessControl{
   /// they can create a Store instance.
   /// @param _newOwner : Address of the new owner candidate
   /// @return The ownerId for the StoreOwner array
-  function makeStoreOwner(address _newOwner)
+  function makeStoreOwner(address _newOwner,string _storeName)
     public
     onlyMaatsLeadership
-    whenNotPaused
-    returns (uint){
+    whenNotPaused{
       require(isStoreOwner[_newOwner] == false);
       StoreOwner memory _storeOwner = StoreOwner({
         ownerAddress: _newOwner,
@@ -108,13 +107,14 @@ contract StoreBase is StoreAccessControl{
 
       // StoreOwner recorded with identifier
       // needs to be part of a mapping to not deallocate
-      uint256 storeOwnerId = storeOwners.push(_storeOwner) -1;
+
 
       isStoreOwner[_newOwner] = true;
 
+      createStore(_newOwner, _storeName);
+
       emit LogNewStoreOwner(_newOwner);
 
-      return(storeOwnerId);
     }
 
     /// @dev Used to remove an owner from the isStoreOwner mapping and prevent
@@ -123,23 +123,28 @@ contract StoreBase is StoreAccessControl{
     /// notice This doesn't have a pausible modifier since we want to be able
     /// to remove an owner when paused in the case they are acting maliciously
     /// as opposed to simple inactivity or other violations.
-    /// @param _badOwner : The address being removed
+    /// @param _storeName : The store of the owner being removed
     /// @return The value of the mapping which states if they are a store owner
-    function removeStoreOwner(address _badOwner)
+    function removeStoreOwner(string _storeName)
       public
       onlyMaatsLeadership // consider requiring this to be a multisig event
       returns(bool){
         // throw if this address isn't an owner
-        require(isStoreOwner[_badOwner] == true);
+        address owner = StoreNameToOwner[_storeName];
+        require(isStoreOwner[owner] == true);
+
+        // free the store name for future use
+        storeExists[_storeName] = false;
 
         // remove ownership of _badOwner's store
         // set the status of the store to closed
-        OwnerToStore[_badOwner].open = false;
-        emit LogStoreClosed(_badOwner,OwnerToStore[_badOwner].storeName);
+        OwnerToStore[owner].open = false;
+        OwnerToStore[owner].storeName = "0";
+        emit LogStoreClosed(owner,OwnerToStore[owner].storeName);
+        isStoreOwner[owner] = false;
 
-        isStoreOwner[_badOwner] = false;
-        emit LogStoreOwnerRemoved(_badOwner);
-        return(isStoreOwner[_badOwner]);
+        emit LogStoreOwnerRemoved(owner);
+        return(isStoreOwner[owner]);
       }
 
     /// @dev Requries that the msg.sender is a storeOwner. It checks to ensure
@@ -147,14 +152,14 @@ contract StoreBase is StoreAccessControl{
     /// they choose hasn't already been taken by another owner.
     /// @param _storeName : The string used as the unique identifier for the Store.
     /// @return _newStore.storeName: returns the name of the new store.
-    function createStore(string _storeName)
-      public
+    function createStore(address _newOwner, string _storeName)
+      internal
       whenNotPaused
       returns(string){
         // Check that msg.sender is registered as a store owner.
-        require(isStoreOwner[msg.sender] == true);
+        require(isStoreOwner[_newOwner] == true);
         // Require that they don't have a store yet.
-        require(createdStore[msg.sender] == false);
+        require(createdStore[_newOwner] == false);
         // Require that the name for their store hasn't been taken.
         require(storeExists[_storeName] == false);
 
@@ -172,20 +177,37 @@ contract StoreBase is StoreAccessControl{
           });
 
         // This mapping stores the newStore in contract storage
-        OwnerToStore[msg.sender] = _newStore;
+        OwnerToStore[_newOwner] = _newStore;
         // Ensure we can access the owner from the store's unique identifier.
-        StoreNameToOwner[_newStore.storeName] = msg.sender;
+        StoreNameToOwner[_newStore.storeName] = _newOwner;
         // Register this name to ensure another owner can't take this name
         storeExists[_newStore.storeName] = true;
         // 0-index is reserved for store owner. Can only change during owner transfer
-        _newStore.storeAdmins[0] = msg.sender;
-        storeAdminToStore[msg.sender] = _newStore;
+        _newStore.storeAdmins[0] = _newOwner;
+        storeAdminToStore[_newOwner] = _newStore;
         // Record the store creation so that the owner can't create another store
-        createdStore[msg.sender] = true;
+        createdStore[_newOwner] = true;
+
+        allStores.push(_newStore);
+
 
       //  emit LogNewStore(msg.sender, _newStore.storeName);
 
         return(_newStore.storeName);
     }
+
+    function getStoreName(uint i) public constant returns(string){
+      if(allStores.length != 0){
+        Store storage _store = allStores[i];
+        string storage storeName = _store.storeName;
+        return storeName;
+      }
+      return "0";
+    }
+
+    function getNumStores() public constant returns(uint){
+      return allStores.length;
+    }
+
 
 }

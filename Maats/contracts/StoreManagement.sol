@@ -58,7 +58,7 @@ contract StoreManagement is StoreBase{
     onlyStoreOwner
     whenNotPaused
     returns(bool){
-      Store storage current = OwnerToStore[msg.sender];
+      Store storage current = storeAdminToStore[msg.sender];
       current.open = true;
       ///emit LogStoreOpened(msg.sender, current.storeName);
       return(true);
@@ -242,6 +242,31 @@ contract StoreManagement is StoreBase{
       // Let the world know about the price change!!
     //  emit LogPriceChange(_productId, current.storeName, _newPrice);
       return(_newPrice);
+  }
+
+  function getStoreAdmins(uint index,string storeName)public constant returns(address){
+    require(index >=1 && index <=5);
+    address owner = StoreNameToOwner[storeName];
+    Store storage _store = OwnerToStore[owner];
+    if(_store.admins[].length > 0){
+      return(_store.admins[index]);
+    }
+    return(address(0));
+  }
+
+  function getNumProducts(string _storeName) public constant returns(uint){
+    require(storeExists[_storeName]);
+    address _owner = StoreNameToOwner[_storeName];
+    Store storage _store = OwnerToStore[_owner];
+    return(_store.prodCount);
+  }
+
+  function getProductType(uint _productId,string _storeName) public constant returns(bool){
+    require(storeExists[_storeName]);
+    address _owner = StoreNameToOwner[_storeName];
+    Store storage _store = OwnerToStore[_owner];
+    Product storage _product = _store.products[_productId];
+    return(_product.auction)
   }
 
 }

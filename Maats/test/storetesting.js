@@ -57,7 +57,7 @@ contract("StoreCore", function(accounts){
     await coreC.createSetPriceProduct(web3.toWei(1,"ether"), 10, {
       from: store1Owner
     });
-    await coreC.createSetPriceProduct(web3.toWei(20,"ether"),20,{
+    await coreC.createSetPriceProduct(web3.toWei(2,"ether"),20,{
       from: store1Owner
     });
   }
