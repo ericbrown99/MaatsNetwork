@@ -67,7 +67,7 @@ class Store extends Component {
     if(this.state.account === this.state.storeOwner){
       return(
         <div className="storeOwnerFunctionsWrapper">
-          <h1> Store Owner Functions </h1>
+          <h1> {storeName} Owner Functions </h1>
           <p> Welcome Owner. You can control your store from the functions below </p>
           <div className="storeOwnerAdminControl">
             <div className="createStoreAdmin">
@@ -146,8 +146,8 @@ class Store extends Component {
     // change the price of an existing product
     const contract = this.state.contract
     const account = this.state.account
-    let productId = parseInt(document.querySelector(".priceChangeProductId").value);
-    let newPrice = parseInt(document.querySelector(".priceChangeNewPrice").value);
+    let productId = parseInt(document.querySelector(".priceChangeProductId").value,10);
+    let newPrice = parseInt(document.querySelector(".priceChangeNewPrice").value,10);
 
     contract.changePrice(newPrice, productId, {from: account})
     .then(() => alert("Price changed to " + newPrice + " successfully"))
@@ -159,6 +159,7 @@ class Store extends Component {
     // render functions for admins/owner if they are current account
     const account = this.state.account
     const admins = this.state.storeAdmins
+    const storeName = this.state.storeName
     let res = false
 
     // check if account is an admin
@@ -170,12 +171,95 @@ class Store extends Component {
     // check if account is owner who also has access to owner functions
     account === this.state.storeOwner ? res = true : null ;
 
+    if(res){
+      return(
+        <div className="storeAdminFunctionsWrapper">
+          <h1> {storeName} Admin Functions </h1>
+          <p> Admins can manage products below </p>
+          <div className="createProducts">
+            <h3> Create a Set Price Product </h3>
+            <p> This is a standard product as opposed to an Auction Product </p>
+            <h4> Set the price for your new product </h4>
+            <input className="newProductPrice" type="text" />
+            <h4> Input your current inventory of the product </h4>
+            <input className="newProductInventory" type="text" />
+            <button onClick={this.createNewProductHandler.bind(this)}>
+              Confirm New Poduct Creation
+            </button>
+            <h3> Create an Auction Product </h3>
+            <p> This product will have an inventory of 1 and can not have the price changed </p>
+            <p> The auction starts at a high price and decends uniformly to a reserve price over time </p>
+            <h4> Set the starting price for the auction </h4>
+            <input className="auctionStartingPrice" type="text"/>
+            <h4> Set the reserve price for the auction </h4>
+            <input className="acutionReservePrice" type="text"/>
+            <h4>{"Set the duration of your auction in HOURS (must be at least 1/60th of an hour)"}</h4>
+            <input classNmae="auctionDuration" type="text"/>
+            <button onClick={this.createNewAuctionHandler.bind(this)}>
+              Confirm New Auction Creation
+            </button>
+          </div>
+          <div className="addInventoryWrapper">
+            <h3> Add inventory to any Set Price prodcuts </h3>
+            <p> Note: you can not add inventory to Auction Products because there is only one for auction </p>
+            <h4> ProductId of product receiving more inventory </h4>
+            <input className="productInventoryId" type="text"/>
+            <h4> Amount of new inventory </h4>
+            <input className="addedInventoryAmount" type="text"/>
+            <button onClick={this.addInventoryHandler.bind(this)}>
+              Confirm Added Inventory
+            </button>
+          </div>
+        </div>
+      )
+    }
+
   }
 
   /* *****
   /* Functions for checkStoreAdminHandler
   /* **** */
 
+  createNewAuctionHandler = () => {
+    // create new product in store
+    const contract = this.state.contract
+    const account = this.state.account
+    let price = parseInt(document.querySelector(".newProductPrice").value, 10)
+    let initialInventory = parseInt(document.querySelector(".newProductInventory").value,10)
+
+    contract.createSetPriceProduct(price,initialInventory,{from:account})
+    .then(() => alert("New product created with price: " + price + " and an initial inventory of: " + initialInventory))
+    .catch(() => alert("Couldn't create new product. Ensure that enough gas was sent with transaction."))
+  }
+
+  createNewAuctionHandler = () => {
+    // create a new auction in store
+    const contract = this.state.contract
+    const account = this.state.account
+    let initialPrice = parseInt(document.querySelector(".auctionStartingPrice").value,10)
+    let reservePrice = parseInt(document.querySelector(".acutionReservePrice").value,10)
+    let duration = parseInt(document.querySelector(".auctionDuration").value,10)
+    // blockchain reads duration values in seconds
+    let durationSecs = duration * 60 * 60 ;
+
+    contract.createAuctionProduct(initialPrice,reservePrice,durationSecs,{from:account})
+    .then(() =>{ alert("Auction successfully created with initial price: "
+      + initialPrice + " and reserve price: " + reservePrice
+      + "and has a duration of: " + duration + " hours.")})
+    .catch(() => {alert("Couldn't create auction. Ensure that duration is greater than 1 minute and that enough gas was sent with the transaction")})
+  }
+
+  addInventoryHandler = () => {
+    // add inventory to set price products
+    const contract = this.state.contract
+    const account = this.state.account
+    let productId = parseInt(document.querySelector(".productInventoryId").value,10);
+    let addedInventory = parseInt(document.querySelector(".addedInventory").value,10);
+
+    contract.addInventory(productId, addedInventory,{from:account})
+    .then(() => alert("Successfully added " + addedInventory + " to the product " + productId + "."))
+    .catch(() => alert("Couldn't add inventory. Ensure you have an appropriate product ID and that enough gas was sent with the transaction"))
+  }
 
 
 
@@ -185,6 +269,39 @@ class Store extends Component {
 
   displayProductsHandler = () => {
     // render the products which are available
+    const products = this.state.products;
+    return(
+      <div>
+      Check out these products!
+      <ul>
+        {products.map((n,index) => {
+          return(
+            //add conditional if here to render
+            n.render ?
+              <div key={n*10}>
+                <p> conditional product render works!! </p>
+                // dif between set price and auction within product component
+              </div>
+            :
+              <div key={n}>
+              <button onClick={() => {this.renderProductHandler(n,index)}}> Check Out Product: {n.index} </button>
+              </div>
+          )
+        })}
+      </ul>
+      </div>
+    );
+  }
+
+  renderProductHandler = (product, index) =>{
+    let tempProducts = this.state.products.slice() ;
+    tempProducts[index].render = true;
+    this.setState({stores: tempProducts})
+
+    // CHECK THIS HERE : Calling This.display handler again to auto render change
+    // without needing to reload the page
+    // not sure if it works!!!
+    return(this.displayProductsHandler())
   }
 
 
