@@ -12,18 +12,21 @@ contract StoreAuction is StorePurchasing{
   event TestLog(uint number);
   /// @dev Emit when a new auction type product is created:
   event LogNewAuctionProduct(uint _auctionId,string indexed _storeName);
-  event AuctionCreated(uint256 productId, uint256 startingPrice, uint256 endingPrice, uint256 duration);
+  event AuctionCreated(uint auctionId, uint256 startingPrice, uint256 endingPrice, uint256 duration);
 
   /// @dev Emit when a new auction executes successfully
-  event AuctionSuccessful(uint256 productId, uint256 totalPrice, address winner);
+  event AuctionSuccessful(uint8 productId, uint256 totalPrice, address winner);
   /// @dev Emit when the auction is cancelled
-  event AuctionCancelled(uint256 productId);
+  event AuctionCancelled(uint auctionId);
 
   /// @dev Tracks all auctions in the Maats Network
-  uint totalAuctions = 0;
+  uint totalAuctions = 1;
 
   /// @dev trakes the Auction Id as a key for the Auction
   mapping(uint256 => Auction) auctionIdToAuction;
+
+  /// @dev nested mapping that takes storeName and productId to return auctionId
+  mapping(string => mapping(uint8 => uint256)) storeNameToAuctionId;
 
   /// @dev Struct for the auction type to manage auction logic
   struct Auction {
@@ -114,8 +117,9 @@ contract StoreAuction is StorePurchasing{
 
 
   /// function for testing successful bid
-  function didBid(address ownerofproduct,uint productId,uint itemId)public constant returns(bool){
-    Store storage current = storeAdminToStore[ownerofproduct];
+  function didBid(address ownerofproduct,uint8 productId,uint itemId)public constant returns(bool){
+    uint storeId = storeAdminToStoreId[ownerofproduct];
+    Store storage current = storeIdToStore[storeId];
     if(current.products[productId].items[itemId] == ItemStatus.Bought){
       return true;
     }else{
@@ -126,7 +130,7 @@ contract StoreAuction is StorePurchasing{
   /// have bids since it goes from high price to low price. Bid is essentially buy.
   /// @param _auctionId : The auction which they will be bidding on
   /// @param _productId : Identifier for product being bid on
-  function _bid(uint256 _auctionId,uint _productId)
+  function _bid(uint256 _auctionId,uint8 _productId)
       public
       payable
       whenNotPaused
@@ -162,8 +166,8 @@ contract StoreAuction is StorePurchasing{
       depositEscrow(seller,value);
 
 
-
-      Store storage current = storeAdminToStore[seller];
+      uint storeId = storeAdminToStoreId[seller];
+      Store storage current = storeIdToStore[storeId];
       current.products[_productId].items[0] = ItemStatus.Bought;
       emit LogItemBought(_productId, msg.sender,current.storeName);
       // Tell the world!
@@ -188,18 +192,19 @@ contract StoreAuction is StorePurchasing{
     whenNotPaused
     returns(uint auctionId){
       // Get current store based on the msg.sender
-      Store storage current = storeAdminToStore[msg.sender];
+      uint storeId = storeAdminToStoreId[msg.sender];
+      Store storage current = storeIdToStore[storeId];
 
       // Create the new product to store in mapping
       Product memory _product = Product({
-        price: uint128(_startingPrice),
+        price: uint72(_startingPrice),
         items: new ItemStatus[](0),
         inventory: 1,
         auction: true
         });
 
       // update product count and pruduct mappings
-      uint _productId = current.prodCount;
+      uint8 _productId = current.prodCount;
       current.products[_productId] = _product;
       current.prodCount += 1;
 
@@ -211,6 +216,7 @@ contract StoreAuction is StorePurchasing{
 
       // Update contract auction count
       uint _auctionId =  totalAuctions;
+      storeNameToAuctionId[current.storeName][_productId] = _auctionId;
       totalAuctions = totalAuctions + 1;
       createAuction( _startingPrice, _endingPrice,_duration,seller,_auctionId);
 
@@ -284,38 +290,45 @@ contract StoreAuction is StorePurchasing{
       }
     }
 
-      /// @dev allows us to get the auction so we can see the various properties
-      /// params : all paramaters have been previously defined
-      function getAuction(uint _productId)
-          public
-          view
-          returns
-      (
-          address seller,
-          uint256 startingPrice,
-          uint256 endingPrice,
-          uint256 duration,
-          uint256 startedAt
-      ) {
-          Auction storage auction = auctionIdToAuction[_productId];
-          require(_isOnAuction(auction));
-          return (
-              auction.seller,
-              auction.startingPrice,
-              auction.endingPrice,
-              auction.duration,
-              auction.startedAt
-          );
-      }
 
-      function getCurrentPrice(uint _productId)
+
+      function getCurrentPrice(uint auctionId)
           public
           view
           returns (uint256)
       {
-          Auction storage auction = auctionIdToAuction[_productId];
+          Auction storage auction = auctionIdToAuction[auctionId];
           require(_isOnAuction(auction));
           return _currentPrice(auction);
+      }
+
+      function getDuration(uint auctionId)public constant returns(uint){
+        Auction storage auction = auctionIdToAuction[auctionId];
+        require(_isOnAuction(auction));
+        return (auction.duration);
+      }
+      function getReservePrice(uint auctionId) public constant returns(uint){
+        Auction storage auction = auctionIdToAuction[auctionId];
+        require(_isOnAuction(auction));
+        return auction.endingPrice;
+      }
+
+      function getItemLength(string storeName, uint8 productId)public constant returns(uint){
+        address owner = StoreNameToOwner[storeName];
+        uint storeId = OwnerToStoreId[owner];
+        return storeIdToStore[storeId].products[productId].items.length;
+      }
+
+      function getItemBought(string storeName, uint8 productId, uint index) public constant returns(bool){
+        address owner = StoreNameToOwner[storeName];
+        uint storeId = OwnerToStoreId[owner];
+        Store storage current = storeIdToStore[storeId];
+        ItemStatus _status = current.products[productId].items[index];
+        return(_status == ItemStatus.Bought);
+      }
+
+      function getAuctionId(string StoreName, uint8 productId) public constant returns(uint){
+        return(storeNameToAuctionId[StoreName][productId]);
       }
 
   }

@@ -9,37 +9,29 @@ import "./StoreBase.sol";
 contract StoreManagement is StoreBase{
 
   /// @dev Emit when a product with set price is created.
-  event LogNewSetPriceProduct(uint _productId,string indexed _storeName);
+  event LogNewSetPriceProduct(uint8 _productId,string indexed _storeName);
   /// @dev Emit when inventory of a product is increased.
-  event LogAddedInventory(uint indexed _productId,uint64 inventory);
+  event LogAddedInventory(uint8 indexed _productId,uint64 inventory);
   /// @dev Emit when a product is no longer being sold
   event LogProductRemoved(address indexed _ownerAddress,string indexed _storeName);
   /// @dev Let the world know of price changes
-  event LogPriceChange(uint indexed _productId,string indexed _storeName,uint128 _newPrice);
-  /// @dev Emit when an admin is added to a store
-  event LogNewAdmin(string indexed _storeName,address adminAddress);
-  /// @dev Emit when an admin is removed from a store
-  event LogAdminRemoved(string indexed _storeName,address adminAddress);
+  event LogPriceChange(uint8 indexed _productId,string indexed _storeName,uint72 _newPrice);
 
 
 
 
-  /// @dev Uses current store to determine if they are an admin, allowing them to
-  /// act on the store for which they are an admin. Recall that the 0-index
-  /// of the storeAdmins array holds the owner address. Therefore any function
-  /// which uses this modifier can be also accessed by the owner!
+
+  /// @dev if they are an admin then mapping won't equal 0. Specific store
+  /// set within function
   modifier onlyStoreAdmin(){
-    Store storage current = storeAdminToStore[msg.sender];
-
-    // if current isn't equal to a store, then the following require fails
-    require(storeExists[current.storeName]);
+    require(storeAdminToStoreId[msg.sender] !=0);
     _;
   }
 
   /// @dev Uses store mappings to determine if the msg.sender is the owner.
   modifier onlyStoreOwner(){
-    Store storage current = OwnerToStore[msg.sender];
-    require(storeExists[current.storeName]);
+    // if they have a store the mapping won't equal zero
+    require(OwnerToStoreId[msg.sender] != 0);
     _;
   }
 
@@ -48,10 +40,9 @@ contract StoreManagement is StoreBase{
 ***** Store Admin Management *****
 */
 
-  // used for testing purposes
-  mapping (address => bool) isStoreAdmin;
+
   function getIsStoreAdmin(address adminAddress)public constant returns(bool){
-    return isStoreAdmin[adminAddress];
+    return (storeAdminToStoreId[adminAddress] != 0);
   }
 
   /// @dev Allow the store owner or its admins to add another admin to the store.
@@ -62,24 +53,23 @@ contract StoreManagement is StoreBase{
   function createStoreAdmin(address _NewAdminAddress)
   public
   whenNotPaused
-  onlyStoreAdmin{
+  onlyStoreOwner{
     // retrieve the store based off of who is calling.
-    Store storage current = storeAdminToStore[msg.sender];
+    uint storeId = OwnerToStoreId[msg.sender];
+    Store storage current = storeIdToStore[storeId];
 
     bool adminCreated = false;
     for(uint i=1; i <= 5 && adminCreated == false; i++){
       if (current.storeAdmins[i] == 0){
-        current.storeAdmins[i] = _NewAdminAddress;
         adminCreated = true;
-        isStoreAdmin[_NewAdminAddress] = true;
+        current.storeAdmins[i] = _NewAdminAddress;
+        storeAdminToStoreId[_NewAdminAddress] = storeId;
       }
     }
-
 
     // This assert is used to prevent a silent failure of this function call
     assert(adminCreated == true);
 
-  ///emit LogNewAdmin(current.storeName, _NewAdminAddress);
   }
 
   /// @dev This function removes an admin from the store. It can only be called
@@ -90,15 +80,18 @@ contract StoreManagement is StoreBase{
   public
   onlyStoreOwner
   whenNotPaused{
-    Store storage current = storeAdminToStore[msg.sender];
+    // get current store
+    uint storeId = OwnerToStoreId[msg.sender];
+    Store storage current = storeIdToStore[storeId];
+
     bool adminRemoved = false;
     uint i = 1;
     // start at 1-index because the 0-index is reserved for the owner
     for(; i<=5 && adminRemoved == false; i++){
       if(current.storeAdmins[i] == _adminAddress){
         current.storeAdmins[i] = 0;
+        storeAdminToStoreId[_adminAddress] = 0;
         adminRemoved = true;
-        isStoreAdmin[_adminAddress] = false;
       }
     }
 
@@ -112,12 +105,12 @@ contract StoreManagement is StoreBase{
 ****** Product Management *****
 */
 
-  /// @dev Only used for testing. GetProductExists really only checks if there
-  /// is  a product in the array at prodCount
-  mapping (uint => bool) productExists;
-  function getProductExists(address ownerAddress)public constant returns(bool){
-    Store storage current = storeAdminToStore[ownerAddress];
-    return productExists[current.prodCount -1];
+  /// @dev If price ==0 its assumed it no longer exists
+  function getProductExists(string storeName,uint8 productId)public constant returns(bool){
+    address owner = StoreNameToOwner[storeName];
+    uint storeId = storeAdminToStoreId[owner];
+    Store storage current = storeIdToStore[storeId];
+    return (current.products[productId].price != 0);
 
   }
   /// @dev This function creates a new product which is sold for a set price.
@@ -130,15 +123,16 @@ contract StoreManagement is StoreBase{
   /// @param _inventory : the initial inventory the store has on hand of the product
   /// @return _productId : returns the key for the products mapping.
   function createSetPriceProduct(
-    uint128 _price,
+    uint72 _price,
     uint64 _inventory
     )
     public
     whenNotPaused
     onlyStoreAdmin
-    returns(uint _productId){
+    returns(uint8 _productId){
       // fetch current store based off of the msg.sender
-      Store storage current = storeAdminToStore[msg.sender];
+      uint storeId = storeAdminToStoreId[msg.sender];
+      Store storage current = storeIdToStore[storeId];
 
       // the product will be stored in the products mapping as to avoid
       // dissapearing during deallocation of local memory variables.
@@ -154,7 +148,6 @@ contract StoreManagement is StoreBase{
       // the count of total products in the store is incremented.
       _productId = current.prodCount;
       current.products[_productId] = _product;
-      productExists[current.prodCount] = true;
       current.prodCount++;
 
       // fill the items array with initial inventory and set to ForSale
@@ -168,9 +161,11 @@ contract StoreManagement is StoreBase{
     }
 
   // Just for testing
-  function getCurrentInventory(address ownerAddress) public constant returns(uint64){
-    Store storage current = storeAdminToStore[ownerAddress];
-    return current.products[0].inventory;
+  function getCurrentInventory(string storeName, uint8 productId) public constant returns(uint64){
+    address owner = StoreNameToOwner[storeName];
+    uint storeId = storeAdminToStoreId[owner];
+    Store storage current = storeIdToStore[storeId];
+    return current.products[productId].inventory;
   }
 
   /// @dev Add inventory to a product and manage inventory variables.
@@ -179,13 +174,14 @@ contract StoreManagement is StoreBase{
   /// @param _productId : the product type which is getting new inventory
   /// @param _newInventory : the amount of new inventory being added
   /// @return current.products[_productId].inventory : the now total inventory
-  function addInventory(uint _productId,uint64 _newInventory)
+  function addInventory(uint8 _productId,uint64 _newInventory)
     public
     onlyStoreAdmin
     whenNotPaused
     returns(uint64){
       // fetch current store based off of msg.sender
-      Store storage current = storeAdminToStore[msg.sender];
+      uint storeId = storeAdminToStoreId[msg.sender];
+      Store storage current = storeIdToStore[storeId];
       // add the new inventory to the current amount of inventory
       current.products[_productId].inventory += _newInventory;
       // Ensure that product isn't of type auction since you can't add inventory
@@ -202,9 +198,11 @@ contract StoreManagement is StoreBase{
       return(current.products[_productId].inventory);
   }
 
-  function getCurrentPrice(address storeOwnerAddress)public constant returns(uint128){
-    Store storage current = storeAdminToStore[storeOwnerAddress];
-    return current.products[0].price;
+  function getCurrentSetPrice(string storeName,uint8 productId)public constant returns(uint72){
+    address owner = StoreNameToOwner[storeName];
+    uint storeId = storeAdminToStoreId[owner];
+    Store storage current = storeIdToStore[storeId];
+    return current.products[productId].price;
   }
   /// @dev Change the price of an existing product. Ensure that the new price
   /// is not larger than 0 (0 is allowed if people are feeling generous).
@@ -212,12 +210,13 @@ contract StoreManagement is StoreBase{
   /// follow their own logic.
   /// @param _newPrice : the new price for the product
   /// @param _productId : the product which is experiencing the price change.
-  function changePrice(uint128 _newPrice,uint _productId)
+  function changePrice(uint72 _newPrice,uint8 _productId)
     public
     onlyStoreOwner
     whenNotPaused
-    returns(uint128){
-      Store storage current = storeAdminToStore[msg.sender];
+    returns(uint72){
+      uint storeId = OwnerToStoreId[msg.sender];
+      Store storage current = storeIdToStore[storeId];
       require(_newPrice >= 0);
       // can't change the price of an auction item
       require(current.products[_productId].auction == false);
@@ -231,7 +230,8 @@ contract StoreManagement is StoreBase{
   function getStoreAdmins(uint index,string storeName)public constant returns(address){
     require(index >=1 && index <=5);
     address owner = StoreNameToOwner[storeName];
-    Store storage _store = OwnerToStore[owner];
+    uint storeId = OwnerToStoreId[owner];
+    Store storage _store = storeIdToStore[storeId];
     if(_store.storeAdmins.length > 0){
       return(_store.storeAdmins[index]);
     }
@@ -240,15 +240,18 @@ contract StoreManagement is StoreBase{
 
   function getNumProducts(string _storeName) public constant returns(uint){
     require(storeExists[_storeName]);
+
     address _owner = StoreNameToOwner[_storeName];
-    Store storage _store = OwnerToStore[_owner];
+    uint storeId = OwnerToStoreId[_owner];
+    Store storage _store = storeIdToStore[storeId];
     return(_store.prodCount);
   }
 
-  function getProductType(uint _productId,string _storeName) public constant returns(bool){
+  function getProductType(uint8 _productId,string _storeName) public constant returns(bool){
     require(storeExists[_storeName]);
     address _owner = StoreNameToOwner[_storeName];
-    Store storage _store = OwnerToStore[_owner];
+    uint storeId = OwnerToStoreId[_owner];
+    Store storage _store = storeIdToStore[storeId];
     Product storage _product = _store.products[_productId];
     return(_product.auction);
   }

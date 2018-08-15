@@ -14,12 +14,12 @@ import "../importedContracts/payment/Escrow.sol";
 contract StorePurchasing is StoreManagement{
 
   /// @dev Let owner/admins know a product instance has been purchased
-  event LogItemBought(uint indexed _productId, address indexed _purchaser,string _storeName);
+  event LogItemBought(uint8 indexed _productId, address indexed _purchaser,string _storeName);
   /// @dev Let owner/admins know they are running out or are out of a product
-  event LogInventoryLow(string indexed _storeName, uint indexed _productId,uint64 remaining);
-  event LogInventoryOut(string indexed _storeName, uint indexed _productId);
+  event LogInventoryLow(string indexed _storeName, uint8 indexed _productId,uint64 remaining);
+  event LogInventoryOut(string indexed _storeName, uint8 indexed _productId);
   /// @dev record that a purchased item has been shipped
-  event LogItemShipped(uint indexed _index,uint indexed _productId,string _storeName);
+  event LogItemShipped(uint indexed _index,uint8 indexed _productId,string _storeName);
 
   /// @dev address of the contract used to handle escrow services;
   Escrow public escrow;
@@ -52,11 +52,12 @@ contract StorePurchasing is StoreManagement{
 
   // this could get expensive, lead to security weaknesses, consider method with
   // index count of first "forSale" item. Make public for testing
-  function findFirstItemForSale(uint _productId, string _storeName) public view returns(uint){
+  function findFirstItemForSale(uint8 _productId, string _storeName) public view returns(uint){
     bool found = false;
     uint index;
     address _owner = StoreNameToOwner[_storeName];
-    Store storage _store = storeAdminToStore[_owner];
+    uint storeId = storeAdminToStoreId[_owner];
+    Store storage _store = storeIdToStore[storeId];
     for(uint i; i < _store.products[_productId].items.length && found == false; i++){
       if(_store.products[_productId].items[i] == ItemStatus.ForSale){
         index = i;
@@ -80,14 +81,15 @@ contract StorePurchasing is StoreManagement{
   /// @param _productId : the product type being purchased
   /// @param _storeName : the unique identifer for the store which sells the product
   /// @return index : The location of the item instance being purchased
-  function buyItem(uint _productId,string _storeName)
+  function buyItem(uint8 _productId,string _storeName)
     public
     payable
     whenNotPaused
     returns (uint index){
       // get address of store owner to be accessed in depositEscrow
       address _storeOwner = StoreNameToOwner[_storeName];
-      Store storage _store = storeAdminToStore[_storeOwner];
+      uint storeId = OwnerToStoreId[_storeOwner];
+      Store storage _store = storeIdToStore[storeId];
 
       // calls internal function to find first product instance ForSale
       index = findFirstItemForSale(_productId, _storeName);
@@ -113,11 +115,13 @@ contract StorePurchasing is StoreManagement{
   }
 
   /// @dev for testing successful ship of item
-  function getItemShipped(address ownerAddress,uint index,uint productId)
+  function getItemShipped(string storeName,uint index,uint8 productId)
    public
    constant
    returns(bool){
-    Store storage current = storeAdminToStore[ownerAddress];
+     address owner = StoreNameToOwner[storeName];
+     uint storeId = OwnerToStoreId[owner];
+     Store storage current = storeIdToStore[storeId];
     if(current.products[productId].items[index] == ItemStatus.Shipped){
       return true;
     }else{
@@ -134,12 +138,13 @@ contract StorePurchasing is StoreManagement{
   /// @param _productId : the product type to which the instance belongs
   /// @return shipped : simply confirms that the product has infact been shipped.
   /// WOULD LOVE TO USE ORACLE HERE FROM SHIPPING COMPANIES!!!!
-  function shipItem(uint _itemIndex,uint _productId)
+  function shipItem(uint _itemIndex,uint8 _productId)
     public
     whenNotPaused
     onlyStoreAdmin
     returns(bool shipped){
-      Store storage current = storeAdminToStore[msg.sender];
+      uint storeId = storeAdminToStoreId[msg.sender];
+      Store storage current = storeIdToStore[storeId];
       require(current.products[_productId].items[_itemIndex] == ItemStatus.Bought);
       shipped = false;
       // would be great to use an oracle here to check that UPS has received the package

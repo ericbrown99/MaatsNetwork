@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import Product from './Product'
 
 class Store extends Component {
   constructor (props) {
@@ -35,6 +36,7 @@ class Store extends Component {
       for(i; i<6; i++){
         storeAdminsTemp[i-1] = await contract.getStoreAdmins(i,storeName, {from: account});
       }
+      await console.log(storeName)
       return(this.setState({storeAdmins: storeAdminsTemp}))
     })
     .then(() => {
@@ -179,12 +181,12 @@ class Store extends Component {
           <div className="createProducts">
             <h3> Create a Set Price Product </h3>
             <p> This is a standard product as opposed to an Auction Product </p>
-            <h4> Set the price for your new product </h4>
+            <h4> Set the price (in Ether) for your new product </h4>
             <input className="newProductPrice" type="text" />
             <h4> Input your current inventory of the product </h4>
             <input className="newProductInventory" type="text" />
             <button onClick={this.createNewProductHandler.bind(this)}>
-              Confirm New Poduct Creation
+              Confirm New Product Creation
             </button>
             <h3> Create an Auction Product </h3>
             <p> This product will have an inventory of 1 and can not have the price changed </p>
@@ -194,7 +196,7 @@ class Store extends Component {
             <h4> Set the reserve price for the auction </h4>
             <input className="acutionReservePrice" type="text"/>
             <h4>{"Set the duration of your auction in HOURS (must be at least 1/60th of an hour)"}</h4>
-            <input classNmae="auctionDuration" type="text"/>
+            <input className="auctionDuration" type="text"/>
             <button onClick={this.createNewAuctionHandler.bind(this)}>
               Confirm New Auction Creation
             </button>
@@ -220,12 +222,17 @@ class Store extends Component {
   /* Functions for checkStoreAdminHandler
   /* **** */
 
-  createNewAuctionHandler = () => {
+  createNewProductHandler = () => {
     // create new product in store
     const contract = this.state.contract
     const account = this.state.account
+    const web3 = this.state.web3
     let price = parseInt(document.querySelector(".newProductPrice").value, 10)
     let initialInventory = parseInt(document.querySelector(".newProductInventory").value,10)
+    console.log(price)
+    console.log(initialInventory)
+
+    price = web3.toWei(price,"ether");
 
     contract.createSetPriceProduct(price,initialInventory,{from:account})
     .then(() => alert("New product created with price: " + price + " and an initial inventory of: " + initialInventory))
@@ -254,7 +261,7 @@ class Store extends Component {
     const contract = this.state.contract
     const account = this.state.account
     let productId = parseInt(document.querySelector(".productInventoryId").value,10);
-    let addedInventory = parseInt(document.querySelector(".addedInventory").value,10);
+    let addedInventory = parseInt(document.querySelector(".addedInventoryAmount").value,10);
 
     contract.addInventory(productId, addedInventory,{from:account})
     .then(() => alert("Successfully added " + addedInventory + " to the product " + productId + "."))
@@ -278,12 +285,12 @@ class Store extends Component {
           return(
             //add conditional if here to render
             n.render ?
-              <div key={n*10}>
+              <div key={index*10}>
                 <p> conditional product render works!! </p>
                 // dif between set price and auction within product component
               </div>
             :
-              <div key={n}>
+              <div key={index}>
               <button onClick={() => {this.renderProductHandler(n,index)}}> Check Out Product: {n.index} </button>
               </div>
           )
@@ -298,9 +305,7 @@ class Store extends Component {
     tempProducts[index].render = true;
     this.setState({stores: tempProducts})
 
-    // CHECK THIS HERE : Calling This.display handler again to auto render change
-    // without needing to reload the page
-    // not sure if it works!!!
+    // This didn't work to auto render again. Maybe remove return line?
     return(this.displayProductsHandler())
   }
 
@@ -345,15 +350,15 @@ class Store extends Component {
              <div>
                 {this.checkStoreOwnerHandler()}
               </div>
-              : <div> ...loading... </div>
+              : <div> ...loading </div>
             }
           </div>
           <div className="storeAdminDisplay">
-            {this.state.web3 && this.state.contract  && this.state.admins ?
+            {this.state.web3 && this.state.contract  && this.state.storeAdmins ?
              <div>
                 {this.checkStoreAdminHandler()}
               </div>
-              : <div> ...loading... </div>
+              : <div> loading... </div>
             }
           </div>
         </div>

@@ -3,6 +3,7 @@ import StoreCoreContract from '../build/contracts/StoreCore.json'
 import EscrowContract from '../build/contracts/Escrow.json'
 import getWeb3 from './utils/getWeb3'
 import Store from './Store'
+import Product from './Product'
 
 import './css/oswald.css'
 import './css/open-sans.css'
@@ -105,12 +106,15 @@ class App extends Component {
       })
       .then(() =>{
         // get all stores from contract
-        return storeCoreInstance.getNumStores({from:accounts[0]})
+        return storeCoreInstance.currentStoreCount({from:accounts[0]})
       }).then( async (numStores) => {
         let storesTemp = []
-        let i=0;
-        if(numStores > 0){
-          for(i; i < numStores; i++){
+        let i=1;
+        console.log(numStores);
+        let name = await storeCoreInstance.getStoreName(i,{from: accounts[0]});
+        await console.log(name);
+        if(numStores  > 1){
+          for(i; i < numStores ; i++){
             let tempObj = new Object()
             tempObj.name = await storeCoreInstance.getStoreName(i, {from:accounts[0]});
             tempObj.render = await false;
@@ -125,8 +129,8 @@ class App extends Component {
           adminsTemp[i] = await storeCoreInstance.maatsAdmins(i, {from: accounts[0]});
         }
         return this.setState({admins: adminsTemp})
-      }).catch(() =>{
-        console.log("error in instantiate contract")
+      /*}).catch(() =>{
+        console.log("error in instantiate contract")*/
       })
     })
   }
@@ -238,7 +242,7 @@ checkMaatsOwnerHandler () {
 
     contract.setMaatsOwner(newOwnerAddress, {from: account})
     .then(() => {
-      this.setState(this.maatsOwnerAddress: newOwnerAddress)
+      this.setState({maatsOwnerAddress: newOwnerAddress})
     })
     .catch(() =>{
       console.log("couldn't change maats owner")
@@ -285,6 +289,7 @@ checkMaatsOwnerHandler () {
                 <input className="newStore" type="text"/>
                 <button onClick={this.createNewStoreOwnerHandler.bind(this)}> Create Owner </button>
                 <h3> Remove Store and Owner </h3>
+                <p> Name of the store to remove </p>
                 <input className="removeStoreOwner" type="text" />
                 <button onClick={this.removeStoreOwnerHandler.bind(this)}> Remove Store & Owner </button>
               </div>
@@ -318,19 +323,21 @@ checkMaatsOwnerHandler () {
     let newOwner = document.querySelector(".newStoreOwnerAddress").value
     let newName = document.querySelector(".newStore").value
 
-    contract.makeStoreOwner(newOwner,newName, {from: account})
-    .then(() => {alert("New owner " + newOwner + " has been created!")})
+    contract.createStore(newOwner,newName, {from: account})
+    .then(() => {alert("New owner " + newOwner + " has created " + newName +"!")})
     //.catch(() =>{alert("New owner couldn't be created")})
   }
 
   removeStoreOwnerHandler = () => {
     const contract = this.state.contract
-    const account = this.state.contract
+    const account = this.state.account
     let StoreRemove = document.querySelector(".removeStoreOwner").value
+    contract.getOwnerFromName(StoreRemove, {from:account})
+    .then((result) => console.log(result));
 
     contract.removeStoreOwner(StoreRemove, {from:account})
     .then(() => {alert("Old Store " + StoreRemove + " has been removed" )})
-    .catch(() => {alert("Store " + StoreRemove + "COULDN'T be removed")})
+    .catch(() => {alert("Store " + StoreRemove + " COULDN'T be removed")})
   }
 
 /* *****
@@ -348,7 +355,7 @@ checkMaatsOwnerHandler () {
           return(
             //add conditional if here to render
             n.render ?
-              <div key={n*10}>
+              <div key={index*10}>
                 <p> conditional render works!! </p>
                 <Store
                   storeName={n.name}
@@ -357,7 +364,7 @@ checkMaatsOwnerHandler () {
                   account={this.state.account} />
               </div>
             :
-              <div key={n}>
+              <div key={index}>
               <button onClick={() => {this.renderStoreHandler(n,index)}}> Go to {n.name} </button>
               </div>
           )
@@ -377,7 +384,7 @@ checkMaatsOwnerHandler () {
     // CHECK THIS HERE : Calling This.display handler again to auto render change
     // without needing to reload the page
     // not sure if it works!!!
-    return(this.displayStoresHandler())
+    this.displayStoresHandler()
   }
 
   /* *****

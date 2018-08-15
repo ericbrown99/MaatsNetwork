@@ -41,22 +41,5 @@ import "./StoreAuction.sol";
     }
 
 
-    /// @dev Allows us to see the properties of a product
-    function getProduct(string _storeName, uint productId)
-      public
-      view
-      returns(
-        uint128 _price,
-        uint64 _inventory,
-        bool _auction
-        ){
-          address _owner = StoreNameToOwner[_storeName];
-          Store storage _store = OwnerToStore[_owner];
-          Product storage _product = _store.products[productId];
-          _price = _product.price;
-          _inventory = _product.inventory;
-          _auction = _product.auction;
-        }
-
 
   }
