@@ -114,7 +114,7 @@ contract StoreAuction is StorePurchasing{
 
 
   /// function for testing successful bid
-  function didBid(address ownerofproduct,uint8 productId,uint itemId)public constant returns(bool){
+  function didBid(address ownerofproduct,uint productId,uint itemId)public constant returns(bool){
     Store storage current = storeAdminToStore[ownerofproduct];
     if(current.products[productId].items[itemId] == ItemStatus.Bought){
       return true;
@@ -126,7 +126,7 @@ contract StoreAuction is StorePurchasing{
   /// have bids since it goes from high price to low price. Bid is essentially buy.
   /// @param _auctionId : The auction which they will be bidding on
   /// @param _productId : Identifier for product being bid on
-  function _bid(uint256 _auctionId,uint8 _productId)
+  function _bid(uint256 _auctionId,uint _productId)
       public
       payable
       whenNotPaused
@@ -199,7 +199,7 @@ contract StoreAuction is StorePurchasing{
         });
 
       // update product count and pruduct mappings
-      uint8 _productId = current.prodCount;
+      uint _productId = current.prodCount;
       current.products[_productId] = _product;
       current.prodCount += 1;
 
@@ -286,7 +286,7 @@ contract StoreAuction is StorePurchasing{
 
       /// @dev allows us to get the auction so we can see the various properties
       /// params : all paramaters have been previously defined
-      function getAuction(uint8 _productId)
+      function getAuction(uint _productId)
           public
           view
           returns
@@ -308,7 +308,7 @@ contract StoreAuction is StorePurchasing{
           );
       }
 
-      function getCurrentPrice(uint8 _productId)
+      function getCurrentPrice(uint _productId)
           public
           view
           returns (uint256)

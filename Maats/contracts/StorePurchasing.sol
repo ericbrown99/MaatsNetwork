@@ -52,7 +52,7 @@ contract StorePurchasing is StoreManagement{
 
   // this could get expensive, lead to security weaknesses, consider method with
   // index count of first "forSale" item. Make public for testing
-  function findFirstItemForSale(uint8 _productId, string _storeName) public view returns(uint){
+  function findFirstItemForSale(uint _productId, string _storeName) public view returns(uint){
     bool found = false;
     uint index;
     address _owner = StoreNameToOwner[_storeName];
@@ -80,7 +80,7 @@ contract StorePurchasing is StoreManagement{
   /// @param _productId : the product type being purchased
   /// @param _storeName : the unique identifer for the store which sells the product
   /// @return index : The location of the item instance being purchased
-  function buyItem(uint8 _productId,string _storeName)
+  function buyItem(uint _productId,string _storeName)
     public
     payable
     whenNotPaused
@@ -113,7 +113,7 @@ contract StorePurchasing is StoreManagement{
   }
 
   /// @dev for testing successful ship of item
-  function getItemShipped(address ownerAddress,uint index,uint8 productId)
+  function getItemShipped(address ownerAddress,uint index,uint productId)
    public
    constant
    returns(bool){
@@ -134,7 +134,7 @@ contract StorePurchasing is StoreManagement{
   /// @param _productId : the product type to which the instance belongs
   /// @return shipped : simply confirms that the product has infact been shipped.
   /// WOULD LOVE TO USE ORACLE HERE FROM SHIPPING COMPANIES!!!!
-  function shipItem(uint _itemIndex,uint8 _productId)
+  function shipItem(uint _itemIndex,uint _productId)
     public
     whenNotPaused
     onlyStoreAdmin

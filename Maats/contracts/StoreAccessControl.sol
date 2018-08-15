@@ -20,7 +20,7 @@ contract StoreAccessControl{
   /// @dev There are at most 5 admins managing the Maats Network
   address[5] public maatsAdmins;
 
-  /// @dev Determine if and address is a network admin
+  /// @dev Determine if an address is a network admin
   mapping (address => bool) isMaatsAdmin;
 
   /// @dev Limit function access to the owner of the Maats Network

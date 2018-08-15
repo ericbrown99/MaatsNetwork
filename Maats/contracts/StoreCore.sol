@@ -40,17 +40,9 @@ import "./StoreAuction.sol";
       }
     }
 
-    /// @dev Checks that the store is actually open for interactions
-    function isStoreOpen(address _storeOwner)
-      public
-      view
-      returns(bool _open){
-          Store storage _store = OwnerToStore[_storeOwner];
-          _open = _store.open;
-    }
 
     /// @dev Allows us to see the properties of a product
-    function getProduct(string _storeName, uint8 productId)
+    function getProduct(string _storeName, uint productId)
       public
       view
       returns(

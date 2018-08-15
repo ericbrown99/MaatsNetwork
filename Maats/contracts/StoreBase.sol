@@ -21,21 +21,13 @@ contract StoreBase is StoreAccessControl{
     // Acts as unique identifier.
     string storeName;
     // Structs can't store struct array's so mapping is used instead.
-    mapping(uint8 => Product) products;
-    // Open or closed. Owner can modify this if they want to make updates.
-    bool open;
+    mapping(uint => Product) products;
     // Stores can only have 5 admins. The 0-index is reserved for store owner.
     address[6] storeAdmins;
     // Acts as the key for the products mapping. NOTE: max num prod = 256: SCALABILITY :/
-    uint8 prodCount;
+    uint prodCount;
   }
 
-  /// @dev ake owner array and create ownerId to improve access to stores
-
-  struct StoreOwner{
-    address ownerAddress; //this controls functionality, make sure not accessible
-    uint128 ownerRanking;
-  }
 
   /// @dev Products are members of Stores. Each new product an owner adds to
   /// their store takes the following form.
@@ -65,7 +57,7 @@ contract StoreBase is StoreAccessControl{
 
   /// @dev Need a way to access the address of the store owner for functions
   /// where store admins are acting upon the store and not the owner.
-  mapping(string => address) public  StoreNameToOwner;
+  mapping(string => address)  StoreNameToOwner;
 
   /// @dev Used to ensure an address isn't registered as an owner multiple times
   /// accessed when loading a page to allow access to owner only functionality.
@@ -100,14 +92,6 @@ contract StoreBase is StoreAccessControl{
     onlyMaatsLeadership
     whenNotPaused{
       require(isStoreOwner[_newOwner] == false);
-      StoreOwner memory _storeOwner = StoreOwner({
-        ownerAddress: _newOwner,
-        ownerRanking: 0 // not placed on front end until threshold # reviews
-        });
-
-      // StoreOwner recorded with identifier
-      // needs to be part of a mapping to not deallocate
-
 
       isStoreOwner[_newOwner] = true;
 
@@ -138,7 +122,6 @@ contract StoreBase is StoreAccessControl{
 
         // remove ownership of _badOwner's store
         // set the status of the store to closed
-        OwnerToStore[owner].open = false;
         OwnerToStore[owner].storeName = "0";
         emit LogStoreClosed(owner,OwnerToStore[owner].storeName);
         isStoreOwner[owner] = false;
@@ -171,7 +154,6 @@ contract StoreBase is StoreAccessControl{
         // OwnerToStore mapping as to not be lost during deallocation
         Store memory _newStore = Store({
           storeName: _storeName,
-          open: false,
           storeAdmins: newArray,
           prodCount: 0
           });

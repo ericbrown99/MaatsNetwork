@@ -8,8 +8,6 @@ import "./StoreBase.sol";
   */
 contract StoreManagement is StoreBase{
 
-  /// @dev Store name is still used in most events as the unique identifer.
-  event LogStoreOpened(address indexed _ownerAddress, string indexed _storeName);
   /// @dev Emit when a product with set price is created.
   event LogNewSetPriceProduct(uint _productId,string indexed _storeName);
   /// @dev Emit when inventory of a product is increased.
@@ -49,20 +47,6 @@ contract StoreManagement is StoreBase{
 /*
 ***** Store Admin Management *****
 */
-
-  /// @dev Stores are initialized as closed to give the owner time to setup shop.
-  /// This function allows them to set their store to open and let the world know!
-  /// @return true : just returns true to confirm success opening the store.
-  function openStore()
-    public
-    onlyStoreOwner
-    whenNotPaused
-    returns(bool){
-      Store storage current = storeAdminToStore[msg.sender];
-      current.open = true;
-      ///emit LogStoreOpened(msg.sender, current.storeName);
-      return(true);
-    }
 
   // used for testing purposes
   mapping (address => bool) isStoreAdmin;
@@ -130,7 +114,7 @@ contract StoreManagement is StoreBase{
 
   /// @dev Only used for testing. GetProductExists really only checks if there
   /// is  a product in the array at prodCount
-  mapping (uint8 => bool) productExists;
+  mapping (uint => bool) productExists;
   function getProductExists(address ownerAddress)public constant returns(bool){
     Store storage current = storeAdminToStore[ownerAddress];
     return productExists[current.prodCount -1];
@@ -152,7 +136,7 @@ contract StoreManagement is StoreBase{
     public
     whenNotPaused
     onlyStoreAdmin
-    returns(uint8 _productId){
+    returns(uint _productId){
       // fetch current store based off of the msg.sender
       Store storage current = storeAdminToStore[msg.sender];
 
@@ -195,7 +179,7 @@ contract StoreManagement is StoreBase{
   /// @param _productId : the product type which is getting new inventory
   /// @param _newInventory : the amount of new inventory being added
   /// @return current.products[_productId].inventory : the now total inventory
-  function addInventory(uint8 _productId,uint64 _newInventory)
+  function addInventory(uint _productId,uint64 _newInventory)
     public
     onlyStoreAdmin
     whenNotPaused
@@ -228,7 +212,7 @@ contract StoreManagement is StoreBase{
   /// follow their own logic.
   /// @param _newPrice : the new price for the product
   /// @param _productId : the product which is experiencing the price change.
-  function changePrice(uint128 _newPrice,uint8 _productId)
+  function changePrice(uint128 _newPrice,uint _productId)
     public
     onlyStoreOwner
     whenNotPaused
@@ -248,8 +232,8 @@ contract StoreManagement is StoreBase{
     require(index >=1 && index <=5);
     address owner = StoreNameToOwner[storeName];
     Store storage _store = OwnerToStore[owner];
-    if(_store.admins[].length > 0){
-      return(_store.admins[index]);
+    if(_store.storeAdmins.length > 0){
+      return(_store.storeAdmins[index]);
     }
     return(address(0));
   }
@@ -266,7 +250,12 @@ contract StoreManagement is StoreBase{
     address _owner = StoreNameToOwner[_storeName];
     Store storage _store = OwnerToStore[_owner];
     Product storage _product = _store.products[_productId];
-    return(_product.auction)
+    return(_product.auction);
+  }
+
+  function getOwnerFromName(string _storeName) public constant returns(address){
+    address _owner = StoreNameToOwner[_storeName];
+    return(_owner);
   }
 
 }

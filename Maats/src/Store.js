@@ -25,7 +25,7 @@ class Store extends Component {
     const account = this.state.account
     const storeName= this.state.storeName;
 
-    contract.StoreNameToOwner(this.state.storeName)
+    contract.getOwnerFromName(this.state.storeName)
     .then((owner) => {
       return(this.setState({storeOwner:owner}))
     })
