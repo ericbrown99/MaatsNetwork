@@ -45,10 +45,12 @@ contract StoreAuction is StorePurchasing{
 
   /// @dev for testing the successful creation of an auciton
 
-  function getAuctionExists(uint auctionId)public constant returns(bool){
+  function getAuctionExists(uint auctionId)public constant returns(uint64){
     uint currentTime = auctionIdToAuction[auctionId].startedAt;
     if(currentTime != 0){
-      return true;
+      return currentTime;
+    }else{
+      return 0;
     }
   }
 

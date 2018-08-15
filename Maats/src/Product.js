@@ -10,6 +10,8 @@ class Product extends Component {
       web3: this.props.web3,
       contract: this.props.contract,
       account: this.props.account,
+      admins: this.props.admins,
+      storeOwner: this.props.owner,
       auctionId: null,
       price: null,
       reservePrice: null,
@@ -72,6 +74,109 @@ class Product extends Component {
       return(await this.setState({itemsBought: tempItemsBought}))
     })
     .catch(() => console.log("error setting up product"))
+  }
+
+  checkAdminOwnerProductHandler = () =>{
+    const account = this.state.account
+    const admins = this.state.storeAdmins
+    const storeName = this.state.storeName
+    let res = false
+    const itemsBought = this.state.itemsBought
+
+    // check if account is an admin
+    for(let item in admins){
+      if(admins[item] === account){
+        res = true
+      }
+    }
+    // check if account is owner who also has access to owner functions
+    account === this.state.storeOwner ? res = true : null ;
+
+    if(res){
+      return(
+      <div className="product functionalities">
+        <h2> Ship Purchased Items To Receive Funds</h2>
+        <ul>
+          {itemsBought.map((n,index) => {
+            return(
+                <div key={index}>
+                <button onClick={() => {this.shipProductHandler(n)}}> Ship Product Item {n} </button>
+                </div>
+            )
+          })}
+        </ul>
+      </div>
+    )
+    }
+  }
+
+  shipProductHandler = (n) =>{
+    const contract = this.state.contract
+    const account = this.state.account
+    const item = n
+    const productId = this.state.productId
+
+    contract.shipItem(item,productId, {from:account})
+    .then(() => alert("Product item " + item + " has been shipped!"))
+    .catch(() => alert("Couldn't ship product item " + item + ". Please ensure enough gas is sent with transaction and reload page before attempting again."))
+  }
+
+  displaySetPriceProductHandler = () =>{
+    // display price, inventory, and buy button
+    const contract = this.state.contract
+    const account = this.state.account
+    const productId = this.state.productId
+    const storeName = this.state.storeName
+
+    return(
+      <h2> {"Product number: " +productId} </h2>
+      WORKING HERERERERER:LKSDJF:L SKDFJ:SL DKFJS:LDKFJSDFasdf
+      asdf;jkasdf;lkasjdfS:LKSJF:LKJSDF:LSKJF:klj
+    )
+
+  }
+
+  displayAuctionProductHandler = () => {
+    // display current price, reserve price, ending time
+  }
+
+  render () {
+    // constantly checking for changing metamask account
+    if(this.state && this.state.account && this.state.web3){
+      var accountInterval = setInterval(() => {
+        if (this.state.web3.eth.accounts[0] !== this.state.account) {
+          this.setState({account: this.state.web3.eth.accounts[0]})
+        }
+      }, 100);
+    }
+
+    return(
+      <div className="productInstance">
+        <div className="productWrapper">
+          <h3> Product {this.state.productId} </h3>
+          {this.state.itemsBought !== null && this.state.auctionId !== null ?
+            <div className="products-display">
+              {this.state.auctionId == 0  ?
+              <div>{this.displaySetPriceProductHandler()}  </div>
+              :
+              <div> {this.displayAuctionProductHandler()} </div>
+              }
+            </div>
+            : <div> ... loading ... </div>
+          }
+          {this.state.itemsBought !== null ?
+            <div className="adminOwnerDisplay">
+              {this.state.itemsBought.length < 1  ?
+              <p> there are no product items to be shipped at this time </p>
+              :
+              <div> {this.checkAdminOwnerProductHandler()} </div>
+              }
+            </div>
+            : <div> ... loading ... </div>
+          }
+        </div>
+      </div>
+    )
   }
 
 }
