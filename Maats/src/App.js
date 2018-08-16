@@ -67,7 +67,6 @@ class App extends Component {
     Escrow.setProvider(this.state.web3.currentProvider)
 
 
-
     // Declaring this for later so we can chain functions on SimpleStorage.
     let storeCoreInstance
     let pause
@@ -110,7 +109,6 @@ class App extends Component {
       }).then( async (numStores) => {
         let storesTemp = []
         let i=1;
-        console.log(numStores);
         let name = await storeCoreInstance.getStoreName(i,{from: accounts[0]});
         await console.log(name);
         if(numStores  > 1){
@@ -148,6 +146,11 @@ checkMaatsOwnerHandler () {
           <div className="PauseToggleButton">
             <button onClick={this.togglePauseHandler.bind(this)}>
               {this.state.paused ? "Unpause Network" : "Pause Network"}
+            </button>
+          </div>
+          <div className="setEscrowButton">
+            <button onClick={this.setEscrowHandler.bind(this)}>
+              Set Escrow contract
             </button>
           </div>
           <div className="CreateAdmins">
@@ -210,6 +213,14 @@ checkMaatsOwnerHandler () {
       .then(() => {current=true})
     }
       this.setState({paused: current})
+  }
+
+  setEscrowHandler = (event) =>{
+    const contract = this.state.contract
+    const account = this.state.account
+    const escrow = this.state.escrow
+
+    contract.setEscrowAddress(escrow.address,{from:account})
   }
 
   createMaatsAdminHandler = (event) =>{

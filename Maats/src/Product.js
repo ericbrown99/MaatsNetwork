@@ -1,5 +1,8 @@
 import React, { Component } from 'react'
 
+let BigNumber = require('bignumber.js')
+
+
 class Product extends Component {
   constructor (props){
     super(props)
@@ -11,7 +14,7 @@ class Product extends Component {
       contract: this.props.contract,
       account: this.props.account,
       admins: this.props.admins,
-      storeOwner: this.props.owner,
+      storeOwner: this.props.storeOwner,
       auctionId: null,
       price: null,
       reservePrice: null,
@@ -41,21 +44,28 @@ class Product extends Component {
     .then(async (result) => {
       if(auctionId == 0){
         let tempInventory = await contract.getCurrentInventory(storeName,productId,{from:account})
-        let tempPrice = await contract.getCurrentSetPrice(storeName,productId,{from:account})
+        let tempPrice =  await contract.getCurrentSetPrice(storeName,productId,{from:account})
         return(await this.setState({
           price:tempPrice,
           inventory: tempInventory,
         }))
       }else{
-        let tempPrice = await contract.getCurrentPrice(result,{from:account});
-        let tempDuration = await contract.getDuration(result,{from:account});
-        let tempReservePrice = await contract.getReservePrice(result,{from:account});
-        return(await this.setState({
-          price:tempPrice,
-          duration: tempDuration,
-          reservePrice: tempReservePrice,
-          inventory: 1,
-        }))
+        if(await contract.didBid(this.state.storeOwner,productId, 0)){
+          return("*")
+        }else{
+          let tempPrice = await contract.getCurrentPrice(result,{from:account});
+          let tempDuration = await contract.getDuration(result,{from:account});
+          let tempReservePrice = await contract.getReservePrice(result,{from:account});
+          await console.log(tempReservePrice)
+          await console.log(tempDuration)
+          await console.log(tempPrice.toNumber())
+          return(await this.setState({
+            price:tempPrice,
+            duration: tempDuration,
+            reservePrice: tempReservePrice,
+            inventory: 1,
+          }))
+        }
       }
     })
     .then(async () => {
@@ -73,7 +83,7 @@ class Product extends Component {
       }
       return(await this.setState({itemsBought: tempItemsBought}))
     })
-    .catch(() => console.log("error setting up product"))
+    /*.catch(() => console.log("error setting up product"))*/
   }
 
   checkAdminOwnerProductHandler = () =>{
@@ -91,7 +101,7 @@ class Product extends Component {
     }
     // check if account is owner who also has access to owner functions
     account === this.state.storeOwner ? res = true : null ;
-
+    console.log(this.state.storeOwner)
     if(res){
       return(
       <div className="product functionalities">
@@ -127,17 +137,92 @@ class Product extends Component {
     const account = this.state.account
     const productId = this.state.productId
     const storeName = this.state.storeName
+    const web3 = this.state.web3
+    let price = this.state.web3.fromWei(this.state.price, "ether");
+
 
     return(
-      <h2> {"Product number: " +productId} </h2>
-      WORKING HERERERERER:LKSDJF:L SKDFJ:SL DKFJS:LDKFJSDFasdf
-      asdf;jkasdf;lkasjdfS:LKSJF:LKJSDF:LSKJF:klj
+      <div className="setPriceRender">
+        <h2> {"Product number: " + productId} </h2>
+        <p> {"Price: " + price} </p>
+        <p> { this.state.inventory > 0 ?
+          "Current Inventory " + this.state.inventory
+          : "This product is out of stock :( "}
+        </p>
+        { this.state.inventory > 0 ?
+          <button onClick={ () => {
+            contract.buyItem(productId, storeName, {from: account, value:this.state.price})
+            .then(() => alert("You bought product " +productId + " sucessfully!"))
+            .catch(() => alert("Couldn't buy product. Please ensure there is enough gas with the transaction."))
+          }}>
+            {"Buy Product Number: " + productId}
+          </button>
+          : <h3> {"Please Check back later!"} </h3>
+        }
+      </div>
     )
-
   }
 
+
+
   displayAuctionProductHandler = () => {
-    // display current price, reserve price, ending time
+    // display current price, reserve price, duration and buy button
+    const contract = this.state.contract
+    const account = this.state.account
+    const auctionId = this.state.auctionId
+    const duration = this.state.duration
+    const productId = this.state.productId
+    let price = this.state.web3.fromWei(this.state.price, "ether")
+    let reserve = this.state.web3.fromWei(this.state.reservePrice, "ether")
+
+    return(
+      <div className="AuctionRender">
+        { this.checkStillOnAuction() !=0 ?
+          <div>
+            <h2> {"Auction for Product: " + this.state.productId} </h2>
+            <p> {"Current Price: " + this.state.price} </p>
+            <p> {"Auction Reserve Price: " + this.state.reservePrice} </p>
+            <p> {"Total duration of auction: " + duration} </p>
+            <button onClick={() => {
+              contract._bid(auctionId, productId, {from: account, value:this.state.price})
+              .then(() => alert("You bought product " +productId + " sucessfully!"))
+              .catch(() => alert("Couldn't buy product. Please ensure there is enough gas with the transaction."))
+            }}>
+              {"Buy Product Number: " + productId}
+            </button>
+          </div>
+          : <h2> This Auction has Completed </h2>
+        }
+      </div>
+    )
+  }
+
+  checkStillOnAuction = () =>{
+    const contract =  this.state.contract
+    const account =  this.state.account
+    let reserve
+    if(this.state.reservePrice !== null){
+       reserve =  this.state.reservePrice.toNumber()
+    }else{
+       reserve = 0
+    }
+    let price
+    if(this.state.price !== null){
+       price = this.state.price.toNumber()
+    }else(
+       price = 0
+    )
+    const productId =  this.state.productId
+    let res = false
+    let bid;
+    let time;
+
+    price == reserve ? time = true : false
+
+    //await time || bid ? res = true : res = false
+
+    return(price)
+
   }
 
   render () {
@@ -164,7 +249,7 @@ class Product extends Component {
             </div>
             : <div> ... loading ... </div>
           }
-          {this.state.itemsBought !== null ?
+          {this.state.itemsBought !== null && this.state.storeOwner !== null ?
             <div className="adminOwnerDisplay">
               {this.state.itemsBought.length < 1  ?
               <p> there are no product items to be shipped at this time </p>

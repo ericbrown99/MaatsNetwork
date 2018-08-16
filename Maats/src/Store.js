@@ -243,13 +243,14 @@ class Store extends Component {
     // create a new auction in store
     const contract = this.state.contract
     const account = this.state.account
+    const web3 = this.state.web3
     let initialPrice = parseInt(document.querySelector(".auctionStartingPrice").value,10)
     let reservePrice = parseInt(document.querySelector(".acutionReservePrice").value,10)
-    let duration = parseInt(document.querySelector(".auctionDuration").value,10)
+    let duration = parseFloat(document.querySelector(".auctionDuration").value,10)
     // blockchain reads duration values in seconds
     let durationSecs = duration * 60 * 60 ;
 
-    contract.createAuctionProduct(initialPrice,reservePrice,durationSecs,{from:account})
+    contract.createAuctionProduct(web3.toWei(initialPrice,"ether"),web3.toWei(reservePrice,"ether"),durationSecs,{from:account})
     .then(() =>{ alert("Auction successfully created with initial price: "
       + initialPrice + " and reserve price: " + reservePrice
       + "and has a duration of: " + duration + " hours.")})
@@ -287,7 +288,15 @@ class Store extends Component {
             n.render ?
               <div key={index*10}>
                 <p> conditional product render works!! </p>
-                // dif between set price and auction within product component
+                <Product
+                  productId={n.index}
+                  storeName={this.state.storeName}
+                  web3={this.state.web3}
+                  contract={this.state.contract}
+                  account={this.state.account}
+                  admins={this.state.admins}
+                  storeOwner={this.state.storeOwner}
+                />
               </div>
             :
               <div key={index}>
