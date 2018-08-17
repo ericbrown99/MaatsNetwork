@@ -22,11 +22,8 @@ class App extends Component {
       escrow:0,
       stores: null,
       admins: null,
-      /*
       increment: 0,
-      storeOwner: 0,
 
-      */
     }
   }
 
@@ -133,6 +130,23 @@ class App extends Component {
     })
   }
 
+  componentDidMount() {
+  this.interval = setInterval(async () => {
+    const account = this.state.account
+    const contract = this.state.contract
+    let adminsTemp = []
+    let i = 0
+    for(i; i<5; i++){
+      i= i+1
+    }
+    this.setState({increment : i }), 500000
+  })
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.interval);
+  }
+
 
 
 checkMaatsOwnerHandler () {
@@ -142,28 +156,39 @@ checkMaatsOwnerHandler () {
         <div className="MaatsOwnerFunctions">
           <br/>
           <br/>
-          <h1> Owner Functions </h1>
-          <div className="PauseToggleButton">
-            <button onClick={this.togglePauseHandler.bind(this)}>
-              {this.state.paused ? "Unpause Network" : "Pause Network"}
-            </button>
+          <div className="essentialFunctions">
+            <h1> Welcome {"Maat's"} Owner! </h1>
+            <h3> Essential Functions </h3>
+            <div className="PauseToggleButton">
+              <button onClick={this.togglePauseHandler.bind(this)}>
+                {this.state.paused ? "Unpause Network" : "Pause Network"}
+              </button>
+            </div>
+            <div className="setEscrowButton">
+              <button onClick={this.setEscrowHandler.bind(this)}>
+                Set Escrow contract
+              </button>
           </div>
-          <div className="setEscrowButton">
-            <button onClick={this.setEscrowHandler.bind(this)}>
-              Set Escrow contract
-            </button>
           </div>
           <div className="CreateAdmins">
             <h3> Manage Admins </h3>
-            <p> Address of new Maats Admin </p>
-            <input className="MaatsAdminAddressAdd" type="text"/>
+              <div className="field">
+                <input className="MaatsAdminAddressAdd" type="text"/>
+                <label htmlFor="register">
+                  <span> New Admin Address </span>
+                </label>
+            </div>
             <button onClick={this.createMaatsAdminHandler.bind(this)}>
-              Create New Maats admin
+              Create Maats Admin
             </button>
           </div>
           <div className="RemoveAdmins">
-            <p> Address of admin to remove </p>
-            <input className="MaatsAdminAddressRemove" type="text"/>
+            <div className="field">
+              <input className="MaatsAdminAddressRemove" type="text"/>
+              <label htmlFor="register">
+                <span> Remove Admin Address </span>
+              </label>
+            </div>
             <button onClick={this.removeMaatsAdminHandler.bind(this)}>
               Remove Maats Admin
             </button>
@@ -171,23 +196,27 @@ checkMaatsOwnerHandler () {
           <div className="CurrentAdmins">
             <h3> Current Admins </h3>
             <ul>
-              <li>{admins[0] != 0 ? admins[0] : "empty"}</li>
-              <li>{admins[1] != 0 ? admins[1] : "empty"}</li>
-              <li>{admins[2] != 0 ? admins[2] : "empty"}</li>
-              <li>{admins[3] != 0 ? admins[3] : "empty"}</li>
-              <li>{admins[4] != 0 ? admins[4] : "empty"}</li>
+              <li>{admins[0] != 0 ? admins[0] : "Open Slot"}</li>
+              <li>{admins[1] != 0 ? admins[1] : "Open Slot"}</li>
+              <li>{admins[2] != 0 ? admins[2] : "Open Slot"}</li>
+              <li>{admins[3] != 0 ? admins[3] : "Open Slot"}</li>
+              <li>{admins[4] != 0 ? admins[4] : "Open Slot"}</li>
             </ul>
           </div>
           <div className="changeOwner">
             <h3> Change the current Maats Owner </h3>
-            <input className="newMaatsOwner" type="text"/>
+            <div className="field">
+              <input className="newMaatsOwner" type="text"/>
+              <label htmlFor="register">
+                <span> {"New Maat's Owner Address"} </span>
+              </label>
+            </div>
             <button onClick={this.changeMaatsOwnerHandler.bind(this)}>
               Confirm Change
             </button>
           </div>
           <div className="fundsWithdrawl">
             <h3> Withdraw funds in Maats </h3>
-            <br/>
             <button onClick={this.withdrawHandler.bind(this)}>
               Confirm withdraw
             </button>
@@ -287,22 +316,41 @@ checkMaatsOwnerHandler () {
     account === this.state.maatsOwnerAddress ? res = true : null ;
 
 
+    <div className="field">
+      <input className="newMaatsOwner" type="text"/>
+      <label htmlFor="register">
+        <span> {"New Maat's Owner Address"} </span>
+      </label>
+    </div>
+
     if(res){
       return(
         <div className="checkAdminHandlerWrapper">
           <div className="AdminFunctions">
-            <h1> Admin Functions </h1>
+            <h1> Welcome {"Maat's"} Admins! </h1>
               <div className="createStoreOwner">
                 <h3> Create Store Owner </h3>
-                <p> Input the address of the new Owner </p>
-                <input className="newStoreOwnerAddress" type="text" />
-                <p> {"Input the new owner's requested store name" }</p>
-                <input className="newStore" type="text"/>
+                <div className="field">
+                  <input className="newStoreOwnerAddress" type="text" />
+                  <label htmlFor="register">
+                    <span> {"New Store Owner Address"} </span>
+                  </label>
+                </div>
+                <div className="field">
+                  <input className="newStore" type="text"/>
+                  <label htmlFor="register">
+                    <span> {"Requested Store Name"} </span>
+                  </label>
+                </div>
                 <button onClick={this.createNewStoreOwnerHandler.bind(this)}> Create Owner </button>
                 <h3> Remove Store and Owner </h3>
-                <p> Name of the store to remove </p>
-                <input className="removeStoreOwner" type="text" />
-                <button onClick={this.removeStoreOwnerHandler.bind(this)}> Remove Store & Owner </button>
+                <div className="field">
+                  <input className="removeStoreOwner" type="text" />
+                  <label htmlFor="register">
+                    <span> {"Name of Store to Remove"} </span>
+                  </label>
+                </div>
+                <button onClick={this.removeStoreOwnerHandler.bind(this)}> Remove Store </button>
               </div>
           </div>
         </div>
@@ -357,46 +405,69 @@ checkMaatsOwnerHandler () {
 
   displayStoresHandler = () => {
     const stores = this.state.stores;
+    const numStores = stores.length;
+    let i = 1;
+    let display = false;
+    for(i; i<numStores;i++){
+      if(stores[i].render){
+        display = true;
+        return(
+          <div>
+          <button className="returnButton" onClick={()=> this.returnHandler(i)}>
+            Return To Stores
+          </button>
+            <Store
+              storeName={stores[i].name}
+              web3={this.state.web3}
+              contract={this.state.contract}
+              account={this.state.account}
+              index= {i} />
+          </div>
+        )
+      }
+    }
 
-    return(
-      <div>
-      The open stores
-      <ul>
-        {stores.map((n,index) => {
+    if(!display){
+      return(
+        <div className="listStores">
+        <h1>Open Stores</h1>
+        <ul>
+        {stores.map((n,index) =>{
           return(
-            //add conditional if here to render
-            n.render ?
-              <div key={index*10}>
-                <p> conditional render works!! </p>
-                <Store
-                  storeName={n.name}
-                  web3={this.state.web3}
-                  contract={this.state.contract}
-                  account={this.state.account} />
+            <div key={index} className="StoreFront">
+              <div className="logoFrame">
+                <img src={"/logo-"+ index +".png"}/>
               </div>
-            :
-              <div key={index}>
-              <button onClick={() => {this.renderStoreHandler(n,index)}}> Go to {n.name} </button>
+              <div className="buttonFrame">
+                <h1> {n.name} </h1>
+                <button onClick={() => {this.renderStoreHandler(n,index)}}> Go to {n.name} </button>
               </div>
+            </div>
           )
         })}
-      </ul>
-      </div>
-    );
+        </ul>
+        </div>
+      )
+    }
+
+
+  }
+
+  returnHandler =  (index) =>{
+    let tempStores = this.state.stores.slice();
+    tempStores[index].render = false;
+
+    this.setState({stores:tempStores})
+    .then(this.renderStoreHandler())
   }
 
   renderStoreHandler = (instance,index) => {
-    console.log(this.state.stores[index].render);
-    console.log(index);
     let tempStores = this.state.stores.slice() ;
     tempStores[index].render = true;
     this.setState({stores: tempStores})
 
-    // CHECK THIS HERE : Calling This.display handler again to auto render change
-    // without needing to reload the page
-    // not sure if it works!!!
-    this.displayStoresHandler()
   }
+
 
   /* *****
   /* Render the results of computations
@@ -416,29 +487,50 @@ checkMaatsOwnerHandler () {
 
     return (
       <div className="App">
-
-        <nav className="navbar pure-menu pure-menu-horizontal">
-            <a href="#" className="pure-menu-heading pure-menu-link"> Maats </a>
-        </nav>
         <main className="container">
           <div className="pure-g">
             <div className="pure-u-1-1">
-              <h1>Shop <br/> Women & Minority <br/> Owned </h1>
-              <p>
-                "Women and minorities are vital parts of our communities, yet there  are still many barriers which prevent them from realizing their true potential.We hope that the Maat’s platform can help our comunities take a smallstep in the right direction by empowering women and minority owners.Here, owner’s will realize 100% of their revenue."
-              </p>
-              <h2>Stores</h2>
-              <div>
-                {this.state.stores !== null ?
-                  <div className="stores-display">
-                    {this.state.stores < 1  ?
-                    <p> there are no stores at this time </p>
-                    :
-                    <div> {this.displayStoresHandler()} </div>
-                    }
-                  </div>
-                  : <div> ... loading ... </div>
-                }
+            <div className="landing">
+              <div className="MaatsHeader">
+                <img src="/feather.png"/>
+                <h1> {"Maat's"} </h1>
+                <div className="currentNetwork">
+                  <span className="dot"> </span>
+                  {this.state.web3 !== null ?
+                    "Test Network"
+                  : "loading network..."}
+                </div>
+              </div>
+                <div className="title">
+                  Shop <br/> Women & Minority <br/> Owned <br/>
+                   <i className="fa fa-angle-down" ></i>
+                </div>
+              </div>
+              <div className="aboutWrapper">
+                <div className="about">
+                  <p>
+                    {"Women and minorities are vital parts of our communities, " +
+                    "yet there  are still many barriers which prevent them from "+
+                    "realizing their true potential. We hope that the Maat’s platform " +
+                    "can help our comunities take a small step in the right direction " +
+                    "by empowering women and minority owners. " +
+                    "Here, owner’s will realize 100% of their revenue."}
+                  </p>
+                </div>
+              </div>
+              <div className="storesDisplayWrapper">
+                <div>
+                  {this.state.stores !== null ?
+                    <div className="stores-display">
+                      {this.state.stores < 1  ?
+                      <p> there are no stores at this time </p>
+                      :
+                      <div className="StoresToDisplay"> {this.displayStoresHandler()} </div>
+                      }
+                    </div>
+                    : <div> ... loading ... </div>
+                  }
+                </div>
               </div>
               <div className="owner-display">
                 {this.state.web3 && this.state.contract  && this.state.admins ?
@@ -542,6 +634,35 @@ checkMaatsOwnerHandler () {
     );
   }
 }
+/*return(
+  <div>
+  <ul>
+    {stores.map((n,index) => {
+      return(
+        n.render ?
+          <div key={index*10}>
+            <Store
+              storeName={n.name}
+              web3={this.state.web3}
+              contract={this.state.contract}
+              account={this.state.account} />
+          </div>
+        :
+          <div key={index} className="StoreFront">
+            <div className="logoFrame">
+              <img src={"/logo-"+ index +".png"}/>
+            </div>
+            <div className="buttonFrame">
+              <h1> {n.name} </h1>
+              <button onClick={() => {this.renderStoreHandler(n,index)}}> Go to {n.name} </button>
+            </div>
+          </div>
+      )
+    })}
+  </ul>
+  </div>
+);*/
+
 /*
   startReadingContract(){
   this.state.contract.pause()

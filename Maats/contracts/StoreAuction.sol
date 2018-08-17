@@ -43,16 +43,7 @@ contract StoreAuction is StorePurchasing{
       uint64 startedAt;
   }
 
-  /// @dev for testing the successful creation of an auciton
 
-  function getAuctionExists(uint auctionId)public constant returns(uint64){
-    uint64 currentTime = auctionIdToAuction[auctionId].startedAt;
-    if(currentTime != 0){
-      return currentTime;
-    }else{
-      return 0;
-    }
-  }
 
   /// @dev Internal function for auctioning products.
   /// @param _startingPrice : the starting price for the Dutch Auction
@@ -233,14 +224,7 @@ contract StoreAuction is StorePurchasing{
       view
       returns (uint256)
   {
-      uint256 secondsPassed = 0;
-
-      // A bit of insurance against negative values (or wraparound).
-      // Probably not necessary (since Ethereum guarnatees that the
-      // now variable doesn't ever go backwards).
-      if (now > _auction.startedAt) {
-          secondsPassed = now - _auction.startedAt;
-      }
+      uint256 secondsPassed = now - _auction.startedAt;
 
       //call to internal function
       return _computeCurrentPrice(
@@ -291,46 +275,5 @@ contract StoreAuction is StorePurchasing{
           return uint256(currentPrice);
       }
     }
-
-
-
-      function getCurrentPrice(uint auctionId)
-          public
-          view
-          returns (uint256)
-      {
-          Auction storage auction = auctionIdToAuction[auctionId];
-          require(_isOnAuction(auction));
-          return _currentPrice(auction);
-      }
-
-      function getDuration(uint auctionId)public constant returns(uint){
-        Auction storage auction = auctionIdToAuction[auctionId];
-        require(_isOnAuction(auction));
-        return (auction.duration);
-      }
-      function getReservePrice(uint auctionId) public constant returns(uint){
-        Auction storage auction = auctionIdToAuction[auctionId];
-        require(_isOnAuction(auction));
-        return auction.endingPrice;
-      }
-
-      function getItemLength(string storeName, uint8 productId)public constant returns(uint){
-        address owner = StoreNameToOwner[storeName];
-        uint storeId = OwnerToStoreId[owner];
-        return storeIdToStore[storeId].products[productId].items.length;
-      }
-
-      function getItemBought(string storeName, uint8 productId, uint index) public constant returns(bool){
-        address owner = StoreNameToOwner[storeName];
-        uint storeId = OwnerToStoreId[owner];
-        Store storage current = storeIdToStore[storeId];
-        ItemStatus _status = current.products[productId].items[index];
-        return(_status == ItemStatus.Bought);
-      }
-
-      function getAuctionId(string StoreName, uint8 productId) public constant returns(uint){
-        return(storeNameToAuctionId[StoreName][productId]);
-      }
 
   }

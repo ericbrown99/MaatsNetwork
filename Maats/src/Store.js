@@ -13,6 +13,7 @@ class Store extends Component {
       web3: this.props.web3,
       contract: this.props.contract,
       account: this.props.account,
+      index: this.props.index,
     }
   }
 
@@ -338,7 +339,7 @@ class Store extends Component {
       <div className="storeInstance">
         <div className="storeWrapper">
           <div className="storeHeader">
-            <h1> Welcome to {this.props.storeName} </h1>
+            <img src={"/logo-" + this.state.index+ ".png"}/>
             <h3> Check out our products below </h3>
           </div>
           <div className="productsWrapper">

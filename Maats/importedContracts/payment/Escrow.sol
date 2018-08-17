@@ -38,14 +38,14 @@ contract Escrow is Ownable {
   * @dev Withdraw accumulated balance for a payee.
   * @param _payee The address whose funds will be withdrawn and transferred to.
   */
-  function withdraw(address _payee) public  {
-    uint256 payment = deposits[_payee];
-    assert(address(this).balance >= payment);
+  function withdraw(address _payee, uint72 _payment) public  {
+    uint256 currentTotal = deposits[_payee];
+    assert(address(this).balance >= _payment);
 
-    deposits[_payee] = 0;
+    deposits[_payee] = currentTotal - uint256(_payment);
 
-    _payee.transfer(payment);
+    _payee.transfer(_payment);
 
-    emit Withdrawn(_payee, payment);
+    emit Withdrawn(_payee, _payment);
   }
 }

@@ -19,8 +19,6 @@ contract StoreManagement is StoreBase{
 
 
 
-
-
   /// @dev if they are an admin then mapping won't equal 0. Specific store
   /// set within function
   modifier onlyStoreAdmin(){
@@ -40,10 +38,6 @@ contract StoreManagement is StoreBase{
 ***** Store Admin Management *****
 */
 
-
-  function getIsStoreAdmin(address adminAddress)public constant returns(bool){
-    return (storeAdminToStoreId[adminAddress] != 0);
-  }
 
   /// @dev Allow the store owner or its admins to add another admin to the store.
   /// The function checks that the address isn't already an admin and ensures that
@@ -105,14 +99,7 @@ contract StoreManagement is StoreBase{
 ****** Product Management *****
 */
 
-  /// @dev If price ==0 its assumed it no longer exists
-  function getProductExists(string storeName,uint8 productId)public constant returns(bool){
-    address owner = StoreNameToOwner[storeName];
-    uint storeId = storeAdminToStoreId[owner];
-    Store storage current = storeIdToStore[storeId];
-    return (current.products[productId].price != 0);
 
-  }
   /// @dev This function creates a new product which is sold for a set price.
   /// It is added to the products mapping for the store and can only be accessed
   /// when the contract isn't paused. Security concerns are present if an
@@ -160,13 +147,6 @@ contract StoreManagement is StoreBase{
       return(_productId);
     }
 
-  // Just for testing
-  function getCurrentInventory(string storeName, uint8 productId) public constant returns(uint64){
-    address owner = StoreNameToOwner[storeName];
-    uint storeId = storeAdminToStoreId[owner];
-    Store storage current = storeIdToStore[storeId];
-    return current.products[productId].inventory;
-  }
 
   /// @dev Add inventory to a product and manage inventory variables.
   /// notice Added inventory for set-price becomes for sale immediatley
@@ -198,12 +178,7 @@ contract StoreManagement is StoreBase{
       return(current.products[_productId].inventory);
   }
 
-  function getCurrentSetPrice(string storeName,uint8 productId)public constant returns(uint72){
-    address owner = StoreNameToOwner[storeName];
-    uint storeId = storeAdminToStoreId[owner];
-    Store storage current = storeIdToStore[storeId];
-    return current.products[productId].price;
-  }
+
   /// @dev Change the price of an existing product. Ensure that the new price
   /// is not larger than 0 (0 is allowed if people are feeling generous).
   /// notice You can't change the price of an auction item since those items
@@ -227,38 +202,5 @@ contract StoreManagement is StoreBase{
       return(_newPrice);
   }
 
-  function getStoreAdmins(uint index,string storeName)public constant returns(address){
-    require(index >=1 && index <=5);
-    address owner = StoreNameToOwner[storeName];
-    uint storeId = OwnerToStoreId[owner];
-    Store storage _store = storeIdToStore[storeId];
-    if(_store.storeAdmins.length > 0){
-      return(_store.storeAdmins[index]);
-    }
-    return(address(0));
-  }
-
-  function getNumProducts(string _storeName) public constant returns(uint){
-    require(storeExists[_storeName]);
-
-    address _owner = StoreNameToOwner[_storeName];
-    uint storeId = OwnerToStoreId[_owner];
-    Store storage _store = storeIdToStore[storeId];
-    return(_store.prodCount);
-  }
-
-  function getProductType(uint8 _productId,string _storeName) public constant returns(bool){
-    require(storeExists[_storeName]);
-    address _owner = StoreNameToOwner[_storeName];
-    uint storeId = OwnerToStoreId[_owner];
-    Store storage _store = storeIdToStore[storeId];
-    Product storage _product = _store.products[_productId];
-    return(_product.auction);
-  }
-
-  function getOwnerFromName(string _storeName) public constant returns(address){
-    address _owner = StoreNameToOwner[_storeName];
-    return(_owner);
-  }
 
 }

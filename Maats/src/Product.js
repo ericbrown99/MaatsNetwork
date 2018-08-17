@@ -83,7 +83,7 @@ class Product extends Component {
       }
       return(await this.setState({itemsBought: tempItemsBought}))
     })
-    /*.catch(() => console.log("error setting up product"))*/
+    .catch(() => console.log("error setting up product"))
   }
 
   checkAdminOwnerProductHandler = () =>{

@@ -59,11 +59,6 @@ contract StoreAccessControl{
     emit LogNewOwner(_newOwner, oldOwner);
   }
 
-  /// @dev used for testing to confimr that admins are infact added to array
-  function getIsAdmin(address _admin) public constant whenNotPaused returns(bool){
-    return isMaatsAdmin[_admin];
-  }
-
   /// @dev Only the owner can create a new network admin. Require's that the
   /// address isn't already an admin and that it isn't equal to 0.
   function createMaatsAdmin(address _newAdmin) public onlyMaatsOwner whenNotPaused{

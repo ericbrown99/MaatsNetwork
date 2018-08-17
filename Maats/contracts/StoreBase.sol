@@ -74,13 +74,6 @@ contract StoreBase is StoreAccessControl{
 
 
 
-
-  /// @dev Function for testing store creation and removal since
-  /// mappings with dynamic keys don't yet have public getter functions
-  function getStoreExists(string _storeName)public constant returns(bool){
-    return storeExists[_storeName];
-  }
-
     /// @dev Used to remove an owner from the isStoreOwner mapping and prevent
     /// the specified address from accessing store owner functions on Maat's.
     /// It also closes the store for which they are the owner.
@@ -150,15 +143,5 @@ contract StoreBase is StoreAccessControl{
 
         return(_newStore.storeName);
     }
-
-    function getStoreName(uint i) public constant returns(string){
-      if(currentStoreCount != 1){
-        Store storage _store = storeIdToStore[i];
-        string storage storeName = _store.storeName;
-        return storeName;
-      }
-      return "0";
-    }
-
 
 }

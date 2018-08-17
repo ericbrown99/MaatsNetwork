@@ -46,8 +46,8 @@ contract StorePurchasing is StoreManagement{
 
   /// @dev An internal function which withdraws and sends funds to store owner
   /// @param _payee : the address of the store owner getting payed.
-  function withdrawEscrow(address _payee) internal{
-    escrow.withdraw(_payee);
+  function withdrawEscrow(address _payee, uint72 _payment) internal{
+    escrow.withdraw(_payee,_payment);
   }
 
   // this could get expensive, lead to security weaknesses, consider method with
@@ -69,10 +69,6 @@ contract StorePurchasing is StoreManagement{
     return index;
   }
 
-  /// @dev for testing purchasing
-  function getPurchase(address _purchaser)public constant returns(uint){
-    return purchaserToItem[_purchaser];
-}
 
   /// @dev This payable function allows customers to buy products from a store
   /// It requires that the value sent in msg.value is greater than the price
@@ -114,20 +110,6 @@ contract StorePurchasing is StoreManagement{
       }
   }
 
-  /// @dev for testing successful ship of item
-  function getItemShipped(string storeName,uint index,uint8 productId)
-   public
-   constant
-   returns(bool){
-     address owner = StoreNameToOwner[storeName];
-     uint storeId = OwnerToStoreId[owner];
-     Store storage current = storeIdToStore[storeId];
-    if(current.products[productId].items[index] == ItemStatus.Shipped){
-      return true;
-    }else{
-      return false;
-    }
-  }
   /// @dev Once an item is logged as bought, the store owner/admin can ship the
   /// item and use this function to log it has been shipped. When Item is shipped,
   /// the owner receives their deposits from escrow.
@@ -147,12 +129,13 @@ contract StorePurchasing is StoreManagement{
       Store storage current = storeIdToStore[storeId];
       require(current.products[_productId].items[_itemIndex] == ItemStatus.Bought);
       shipped = false;
+      uint72 payment = current.products[_productId].price;
       // would be great to use an oracle here to check that UPS has received the package
       // for now will let store leadership change the status of the item to shipped
       current.products[_productId].items[_itemIndex] = ItemStatus.Shipped;
       shipped = true;
       emit LogItemShipped(_itemIndex, _productId, current.storeName);
 
-      withdrawEscrow(StoreNameToOwner[current.storeName]);
+      withdrawEscrow(StoreNameToOwner[current.storeName], payment);
     }
 }

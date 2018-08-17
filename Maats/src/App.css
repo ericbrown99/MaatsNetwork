@@ -1,12 +1,14 @@
 /* PAGE */
 
+@import url('https://fonts.googleapis.com/css?family=Alegreya|Alegreya+Sans:200,400,500');
+
 body,
 .pure-g [class*=pure-u] {
-  font-family: 'Open Sans', sans-serif;
+  font-family: 'Alegreya Sans', sans-serif;
 }
 
 h1, h2, h3 {
-  font-family: 'Oswald', 'Arial Narrow', sans-serif;
+  font-family: 'Alegreya Sans', sans-serif;
 }
 
 code {
@@ -16,11 +18,365 @@ code {
   background: #eee;
 }
 
-.container {
+
+/* *****
+/* Landing Display
+/* ***** */
+
+.landing {
   box-sizing: border-box;
   width: 100%;
-  padding: 45px 20px;
+  padding: 20px 10px 20px 0px;
+  background-image: url("./css/6.jpg");
+  background-repeat: no-repeat;
+  background-size:cover;
+  border-bottom: 100px;
 }
+
+
+.MaatsHeader{
+  margin-left: 60px;
+  margin-bottom: 30px;
+  height: 130px;
+}
+
+.MaatsHeader h1{
+  font-size: 70px;
+  font-weight: 400;
+  color: #FFFFFF;
+  float: left;
+}
+
+
+.MaatsHeader img{
+  padding-right: 10px;
+  padding-top: 20px;
+  height: 110px;
+  float: left;
+}
+
+.currentNetwork{
+  float: right;
+  color: #FFFF;
+  font-size: 25px;
+  margin-right: 180px;
+  margin-top: 80px;
+}
+
+.dot{
+  height: 10px;
+  width: 10px;
+  margin-right: 5px;
+  margin-bottom: 3px;
+  background-color: #F41010;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.title{
+  text-align: center;
+  align-content: center;
+  font-size: 80px;
+  color: #F8DE4C;
+  font-weight: 400;
+  padding-top: 20px;
+  padding-bottom: 100px;
+}
+
+/* *****
+/* About Display
+/* ***** */
+
+.aboutWrapper{
+  background-image: url("./css/about.png");
+  background-size:cover;
+  width: 100%;
+  height: 500px;
+}
+
+.about p{
+  width: 45%;
+  margin-left: 50%;
+  font-size: 30px;
+  color: #FFF;
+  margin-top: 0;
+  padding-top: 80px;
+
+}
+
+/* *****
+/* Stores Display
+/* ***** */
+
+.storesDisplayWrapper{
+  margin-top: 30px;
+  text-align:center;
+}
+
+.storesDisplayWrapper h1{
+  font-size: 80px;
+  color: #5E1D8B;
+}
+
+.stores-display{
+  width: 90%;
+  display: inline-block;
+}
+
+
+.StoreFront{
+  margin-top: 120px;
+  margin-bottom: 40px;
+}
+
+.StoreFront:first-child{
+  margin-top: 80px;
+}
+
+.listStores{
+  margin-bottom: 100px;
+  height: 100%;
+}
+
+.logoFrame{
+  height: 300px;
+  width: 45%;
+  border-radius: 15%;
+  display: inline-block;
+  float: left;
+  margin-bottom: 10px;
+}
+
+.StoreFront:nth-child(odd) .logoFrame{
+  background-color: #F7A824;
+}
+
+.StoreFront:nth-child(even) .logoFrame{
+  background-color: #AE44B8;
+}
+
+
+.logoFrame img{
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  padding-top: 50px;
+  max-width: 80%;
+  max-height: 80%;
+}
+
+.buttonFrame{
+  display: block;
+  margin:auto;
+  padding-top: 25px;
+}
+
+.buttonFrame h1{
+  font-size: 50px;
+  color: #000;
+}
+
+.buttonFrame button{
+  display: inline-block;
+  padding: 15px 25px;
+  margin-top: 30px;
+  text-align: center;
+  text-decoration: none;
+  outline: none;
+  border: none;
+  padding-left: 15px;
+  padding-right: 15px;
+  min-width: 100px;
+  height: 70px;
+  border-radius: 15px;
+  background-color: #F8DE4C;
+  font-size: 35px;
+  font-weight: 500;
+}
+/* *****
+/* Maats Owner Section
+/* ***** */
+
+.owner-display, .admin-display{
+  width: 100%;
+  background-color: #5E1D8B;
+  margin: auto;
+}
+
+.MaatsOwnerFunctions,.checkAdminHandlerWrapper {
+  width: 90%;
+  display: inline-block;
+  margin-left: 5%;
+  padding-bottom: 40px;
+
+}
+
+.MaatsOwnerFunctions h1 ,.checkAdminHandlerWrapper h1 {
+  align-content: center;
+  text-align: center;
+  font-size: 60px;
+  font-weight: 200;
+  color: #F8DE4C;
+
+}
+
+.MaatsOwnerFunctions h3, .checkAdminHandlerWrapper h3{
+  font-size: 40px;
+  color: #FFF;
+  text-align: center;
+}
+
+.MaatsOwnerFunctions p, .checkAdminHandlerWrapper p{
+  font-size: 20px;
+  color: #FFF;
+}
+
+ .MaatsOwnerFunctions div.setEscrowButton button{
+  margin-left: 5px;
+}
+
+.MaatsOwnerFunctions div.PauseToggleButton button{
+  margin-left: 30%;
+}
+
+.MaatsOwnerFunctions button, .checkAdminHandlerWrapper button{
+  display: inline-block;
+  padding: 15px 25px;
+  margin-top: 10px;
+  text-align: center;
+  text-decoration: none;
+  outline: none;
+  border: none;
+  width: 20%;
+  height: 50px;
+  border-radius: 15px;
+  background-color: #F7A824;
+  font-size: 20px;
+  font-weight: 500;
+  margin-left: 33%;
+}
+
+.PauseToggleButton button{
+  float:left;
+}
+
+
+.RemoveAdmins{
+  margin-top: 40px;
+}
+
+.CurrentAdmins li{
+  color: #FFF;
+  margin-left: 33%;
+  font-size: 20px;
+  list-style: decimal;
+}
+
+
+/* *****
+/* Opened Store Rendering
+/* ***** */
+
+.storeHeader h1{
+  margin-bottom: 40px;
+}
+
+.storeHeader img{
+  width: auto;
+  height: 200px;
+  margin-bottom: 40px;
+}
+
+.returnButton {
+  display: inline-block;
+  margin-top: 30px;
+  text-align: center;
+  text-decoration: none;
+  outline: none;
+  border: none;
+  padding-left: 15px;
+  padding-right: 15px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  min-width: 100px;
+  min-height: 40px;
+  border-radius: 15px;
+  background-color: #5E1D8B;
+  font-size: 15px;
+  font-weight: 500;
+  margin-left: 75%;
+  color: #FFF;
+}
+
+
+/* *****
+/* Input Design
+/* ***** */
+
+.field {
+  width: 385px;
+  height: 70px;
+  position: relative;
+  margin-bottom: 20px;
+  align-content: center;
+  margin-left: 33%;
+}
+.field input {
+  width: 100%;
+  border-radius: 6px;
+  height: 70px;
+  border: 0;
+  padding: 10px;
+  padding: 10px 0 0 16px;
+  font-size: 0;
+  background: #F58016;
+  transition: background 0.3s ease;
+  color: #ffffff;
+}
+.field input:focus {
+  background: #EB6D05;
+  font-size: 20px;
+  outline: none;
+}
+.field input:focus::selection {
+  background: rgba(188, 232, 255, 0.5);
+}
+.field input.active {
+  background: #065CB7;
+  font-size: 23px;
+}
+.field input,
+.field button {
+  position: absolute;
+  height: 70px;
+}
+
+.field input:focus + label {
+  font-size: 19px;
+  transform: translate(16px, 11px);
+  color: rgba(255, 255, 255, 0.7);
+}
+.field label {
+  position: absolute;
+  color: white;
+  transform: translate(16px, 20px);
+  transition: transform 0.3s ease, font-size 0.3s ease, color 0.3s 0.1s ease;
+  font-size: 23px;
+}
+.field label.active {
+  font-size: 19px;
+  transform: translate(16px, 11px);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.field input:focus + label + button {
+  opacity: 1;
+}
+
+
+/* *****
+/* truffle box css
+/* ***** */
 
 .pure-button-primary {
   background-color: #0c1a2b;
@@ -40,7 +396,7 @@ code {
   position: fixed;
   padding: 5px;
   background: #0c1a2b;
-  font-family: 'Oswald', 'Arial Narrow', sans-serif;
+  font-family: 'Alegreya Sans', 'Arial Narrow', sans-serif;
 }
 
 .navbar a {
