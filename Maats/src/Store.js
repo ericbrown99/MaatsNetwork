@@ -13,7 +13,7 @@ class Store extends Component {
       web3: this.props.web3,
       contract: this.props.contract,
       account: this.props.account,
-      index: this.props.index,
+      indexed: this.props.indexed,
     }
   }
 
@@ -62,6 +62,14 @@ class Store extends Component {
   }
 
 
+
+  /*<div className="field">
+    <input className="MaatsAdminAddressAdd" type="text"/>
+    <label htmlFor="register">
+      <span> New Admin Address </span>
+    </label>
+  </div>*/
+
   checkStoreOwnerHandler = () => {
     // render owner functions if its the owner
     const storeName = this.state.storeName;
@@ -70,45 +78,60 @@ class Store extends Component {
     if(this.state.account === this.state.storeOwner){
       return(
         <div className="storeOwnerFunctionsWrapper">
-          <h1> {storeName} Owner Functions </h1>
-          <p> Welcome Owner. You can control your store from the functions below </p>
+          <h1> {storeName}Welcome {storeName} Owner! </h1>
+          <h4> You can control your store from the functions below </h4>
           <div className="storeOwnerAdminControl">
             <div className="createStoreAdmin">
-              <h2> Manage Your Admins</h2>
-              <p> Address of new {storeName} Admin </p>
-              <input className="StoreAdminAddressAdd" type="text"/>
+              <h3> Manage Your Admins</h3>
+              <div className="field">
+                <input className="StoreAdminAddressAdd" type="text"/>
+                <label htmlFor="register">
+                  <span> {storeName} Admin Address </span>
+                </label>
+              </div>
               <button onClick={this.createStoreAdminHandler.bind(this)}>
                 Confirm New Admin
               </button>
             </div>
             <div className="removeStoreAdmin">
-              <p> Address of {storeName} admin to remove </p>
-              <input className="StoreAdminAddressRemove" type="text"/>
+
+              <div className="field">
+                <input className="StoreAdminAddressRemove" type="text"/>
+                <label htmlFor="register">
+                  <span> Remove Admin Address </span>
+                </label>
+              </div>
               <button onClick={this.removeStoreAdminHandler.bind(this)}>
                 Confirm Remove Admin
               </button>
             </div>
-            <div className="currentStoreAdmins">
-              <h2> Your current admins </h2>
+            <div className="CurrentAdmins">
+              <h3> Your current admins </h3>
               <ul>
-                <li>{admins[0] != 0 ? admins[0] : "empty"}</li>
-                <li>{admins[1] != 0 ? admins[1] : "empty"}</li>
-                <li>{admins[2] != 0 ? admins[2] : "empty"}</li>
-                <li>{admins[3] != 0 ? admins[3] : "empty"}</li>
-                <li>{admins[4] != 0 ? admins[4] : "empty"}</li>
+                <li>{admins[0] != 0 ? admins[0] : "Open Slot"}</li>
+                <li>{admins[1] != 0 ? admins[1] : "Open Slot"}</li>
+                <li>{admins[2] != 0 ? admins[2] : "Open Slot"}</li>
+                <li>{admins[3] != 0 ? admins[3] : "Open Slot"}</li>
+                <li>{admins[4] != 0 ? admins[4] : "Open Slot"}</li>
               </ul>
             </div>
             <div className="ChangeProductPrice">
-              <h2> Change the price of an existing Product </h2>
-              <p> Note: {"you can't change the price of an auction product"} </p>
+              <h3> Change the price of an existing Product </h3>
+              <p> Note: {"You can't change the price of an auction product"} </p>
               <div>
-                <p> ProductId </p>
-                <input className="priceChangeProductId" type="text"/>
+                <div className="field">
+                  <input className="priceChangeProductId" type="text"/>
+                  <label htmlFor="register">
+                    <span> ProductId </span>
+                  </label>
+                </div>
               </div>
-              <div>
-                <p> New Price </p>
-                <input className="priceChangeNewPrice" type="text"/>
-              </div>
+                <div className="field">
+                  <input className="priceChangeNewPrice" type="text"/>
+                  <label htmlFor="register">
+                    <span> New Price (Ether) </span>
+                  </label>
+                </div>
               <button onClick={this.changeProductPriceHandler.bind(this)}>
                 Confirm Price Change
               </button>
@@ -178,26 +201,43 @@ class Store extends Component {
       return(
         <div className="storeAdminFunctionsWrapper">
           <h1> {storeName} Admin Functions </h1>
-          <p> Admins can manage products below </p>
+          <h4> Admins can manage products below </h4>
           <div className="createProducts">
-            <h3> Create a Set Price Product </h3>
-            <p> This is a standard product as opposed to an Auction Product </p>
-            <h4> Set the price (in Ether) for your new product </h4>
-            <input className="newProductPrice" type="text" />
-            <h4> Input your current inventory of the product </h4>
-            <input className="newProductInventory" type="text" />
+            <h3> Create a Set-Price Product </h3>
+            <p>  Read: Not an Auction Product </p>
+            <div className="field">
+              <input className="newProductPrice" type="text" />
+              <label htmlFor="register">
+                <span> Price (Ether) </span>
+              </label>
+            </div>
+              <div className="field">
+                <input className="newProductInventory" type="text" />
+                <label htmlFor="register">
+                  <span> Initial Product Inventory </span>
+                </label>
+              </div>
             <button onClick={this.createNewProductHandler.bind(this)}>
               Confirm New Product Creation
             </button>
             <h3> Create an Auction Product </h3>
-            <p> This product will have an inventory of 1 and can not have the price changed </p>
+            <p> Note: This product will have an inventory of 1 and can not have the price changed </p>
             <p> The auction starts at a high price and decends uniformly to a reserve price over time </p>
-            <h4> Set the starting price for the auction </h4>
-            <input className="auctionStartingPrice" type="text"/>
-            <h4> Set the reserve price for the auction </h4>
-            <input className="acutionReservePrice" type="text"/>
+            <div className="field">
+              <input className="auctionStartingPrice" type="text"/>
+              <label htmlFor="register">
+                <span> Starting Price of Auction (Ether) </span>
+              </label>
+            </div>
+            <div className="field">
+              <input className="acutionReservePrice" type="text"/>
+              <label htmlFor="register">
+                <span> Reserve Price (Ether) </span>
+              </label>
+            </div>
             <h4>{"Set the duration of your auction in HOURS (must be at least 1/60th of an hour)"}</h4>
-            <input className="auctionDuration" type="text"/>
+            <div className="field">
+              <input className="auctionDuration" type="text"/>
             <button onClick={this.createNewAuctionHandler.bind(this)}>
               Confirm New Auction Creation
             </button>
@@ -279,40 +319,69 @@ class Store extends Component {
   displayProductsHandler = () => {
     // render the products which are available
     const products = this.state.products;
-    return(
-      <div>
-      Check out these products!
-      <ul>
-        {products.map((n,index) => {
-          return(
-            //add conditional if here to render
-            n.render ?
-              <div key={index*10}>
-                <p> conditional product render works!! </p>
-                <Product
-                  productId={n.index}
-                  storeName={this.state.storeName}
-                  web3={this.state.web3}
-                  contract={this.state.contract}
-                  account={this.state.account}
-                  admins={this.state.admins}
-                  storeOwner={this.state.storeOwner}
-                />
+    const numProducts = this.state.products.length;
+    let i = 0;
+    let display = false;
+    for(i; i<numProducts; i++){
+      if(products[i].render){
+        display = true;
+        return(
+          <div className="ReturnedProduct">
+          <button className="returnButton" onClick={()=> this.returnHandler(i)}>
+            Return To Products
+          </button>
+            <Product
+              productId={i}
+              storeName={this.state.storeName}
+              web3={this.state.web3}
+              contract={this.state.contract}
+              account={this.state.account}
+              admins={this.state.admins}
+              storeOwner={this.state.storeOwner}
+            />
+          </div>
+        )
+      }
+    }
+    if(!display){
+      return(
+        <div className="listProducts">
+        <h1> Products </h1>
+        <ul>
+          {products.map((n,index) => {
+            return(
+              <div className="ProductsRendering">
+                <div key={index} className="productInList">
+                  <button onClick={() => {this.renderProductHandler(n,index)}}>
+                  <div className="productImage">
+                    <img src={"/store-" + this.state.indexed + "-product-" + index + ".png"}/>
+                    <span> Check It Out </span>
+                  </div>
+                  </button>
+                </div>
               </div>
-            :
-              <div key={index}>
-              <button onClick={() => {this.renderProductHandler(n,index)}}> Check Out Product: {n.index} </button>
-              </div>
+            )
+          })}
+          </ul>
+          </div>
           )
-        })}
-      </ul>
-      </div>
-    );
+      }
+    }
+
+
+
+  returnHandler =  (index) =>{
+    let tempStores = this.state.stores.slice();
+    tempStores[index].render = false;
+
+    this.setState({stores:tempStores})
+    .then(this.renderStoreHandler())
   }
 
   renderProductHandler = (product, index) =>{
     let tempProducts = this.state.products.slice() ;
     tempProducts[index].render = true;
+    console.log(tempProducts[index]);
     this.setState({stores: tempProducts})
 
     // This didn't work to auto render again. Maybe remove return line?
@@ -339,21 +408,21 @@ class Store extends Component {
       <div className="storeInstance">
         <div className="storeWrapper">
           <div className="storeHeader">
-            <img src={"/logo-" + this.state.index+ ".png"}/>
-            <h3> Check out our products below </h3>
+            <img src={"/logo-" + this.state.indexed+ ".png"}/>
           </div>
           <div className="productsWrapper">
-            <h2> Products </h2>
-            {this.state.products !== null ?
-              <div className="stores-display">
-                {this.state.products < 1  ?
-                <p> there are no products at this time </p>
-                :
-                <div> {this.displayProductsHandler()} </div>
-                }
-              </div>
-              : <div> ... loading ... </div>
-            }
+            <div className="productsDisplayWrapper">
+              {this.state.products !== null ?
+                <div className="stores-display">
+                  {this.state.products < 1  ?
+                  <h2> there are no products at this time </h2>
+                  :
+                  <div> {this.displayProductsHandler()} </div>
+                  }
+                </div>
+                : <div> ... loading ... </div>
+              }
+            </div>
           </div>
           <div className="storeOwnerDisplay">
             {this.state.web3 && this.state.contract  && this.state.storeAdmins ?

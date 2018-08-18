@@ -177,7 +177,7 @@ checkMaatsOwnerHandler () {
                 <label htmlFor="register">
                   <span> New Admin Address </span>
                 </label>
-            </div>
+              </div>
             <button onClick={this.createMaatsAdminHandler.bind(this)}>
               Create Maats Admin
             </button>
@@ -412,16 +412,16 @@ checkMaatsOwnerHandler () {
       if(stores[i].render){
         display = true;
         return(
-          <div>
-          <button className="returnButton" onClick={()=> this.returnHandler(i)}>
-            Return To Stores
-          </button>
-            <Store
-              storeName={stores[i].name}
-              web3={this.state.web3}
-              contract={this.state.contract}
-              account={this.state.account}
-              index= {i} />
+          <div className="renderedStore">
+            <button className="returnButton" onClick={()=> this.returnHandler(i)}>
+              Return To Stores
+            </button>
+              <Store
+                storeName={stores[i].name}
+                web3={this.state.web3}
+                contract={this.state.contract}
+                account={this.state.account}
+                indexed= {i} />
           </div>
         )
       }
@@ -434,8 +434,8 @@ checkMaatsOwnerHandler () {
         <ul>
         {stores.map((n,index) =>{
           return(
-            <div key={index} className="StoreFront">
-              <div className="logoFrame">
+            <div key={index} className="StoreFront" >
+              <div className="logoFrame" >
                 <img src={"/logo-"+ index +".png"}/>
               </div>
               <div className="buttonFrame">
