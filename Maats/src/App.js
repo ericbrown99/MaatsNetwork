@@ -528,7 +528,7 @@ checkMaatsOwnerHandler () {
                       <div className="StoresToDisplay"> {this.displayStoresHandler()} </div>
                       }
                     </div>
-                    : <div> ... loading ... </div>
+                    : <div className="loading"> ...loading... </div>
                   }
                 </div>
               </div>
@@ -537,7 +537,7 @@ checkMaatsOwnerHandler () {
                  <div>
                     {this.checkMaatsOwnerHandler()}
                   </div>
-                  : <div> ...loading... </div>
+                  : <div className="loading"> ...loading... </div>
                 }
               </div>
 
@@ -546,7 +546,7 @@ checkMaatsOwnerHandler () {
                  <div>
                     {this.checkMaatsAdminHandler()}
                  </div>
-                  : <div> ...loading... </div>
+                  : <div className="loading"> ...loading... </div>
                 }
               </div>
 

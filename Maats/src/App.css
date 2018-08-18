@@ -23,6 +23,11 @@ code {
 /* Landing Display
 /* ***** */
 
+.loading{
+  background-color: inherit;
+  height: 500px;
+}
+
 .landing {
   box-sizing: border-box;
   width: 100%;
@@ -212,6 +217,12 @@ code {
   margin: auto;
 }
 
+/*.storeOwnerDisplay,
+.storeAdminDisplay{
+  width: 99%;
+  margin:0 auto;
+}*/
+
 .MaatsOwnerFunctions,
 .checkAdminHandlerWrapper,
 .storeOwnerFunctionsWrapper,
@@ -222,9 +233,21 @@ code {
   padding-bottom: 40px;
 }
 
+.createStoreAdmin,
+.removeStoreAdmin,
+.CurrentAdmins,
+.ChangeProductPrice,
+.createProducts,
+.addInventoryWrapper{
+  text-align: left;
+  margin-bottom: 20px;
+  margin-left: -40px;
+}
+
+
 .storeOwnerFunctionsWrapper,
 .storeAdminFunctionsWrapper{
-  width: 100%;
+  margin-left: 0;
 }
 
 .MaatsOwnerFunctions h1,
@@ -236,8 +259,12 @@ code {
   font-size: 60px;
   font-weight: 200;
   color: #F8DE4C;
-
 }
+
+/*.storeOwnerFunctionsWrapper h1,
+.storeAdminFunctionsWrapper h1{
+  margin-left: 0;
+}*/
 
 .MaatsOwnerFunctions h3,
 .checkAdminHandlerWrapper h3,
@@ -248,10 +275,12 @@ code {
   margin-left: 33%;
 }
 
+/*
 .storeOwnerFunctionsWrapper h3,
 .storeAdminFunctionsWrapper h3{
-  margin-left: -9%;
-}
+  align-content: center;
+  margin-left: -25%;
+}*/
 
 .MaatsOwnerFunctions p,
 .checkAdminHandlerWrapper p,
@@ -259,12 +288,15 @@ code {
 .storeAdminFunctionsWrapper p{
   font-size: 20px;
   color: #FFF;
+  text-align: left;
+  margin-left: 33%
 }
 
 .storeOwnerFunctionsWrapper h4,
 .storeAdminFunctionsWrapper h4{
   font-size: 30px;
   color: #fff;
+  text-align: center;
 }
 
  .MaatsOwnerFunctions div.setEscrowButton button{
@@ -299,10 +331,11 @@ code {
   transition:all 0.3s;
 }
 
-.storeOwnerFunctionsWrapper button,
+/*.storeOwnerFunctionsWrapper button,
 .storeAdminFunctionsWrapper button{
-  margin-left: -18%;
-}
+  margin-left: -40.4%;
+  align-content: center;
+}*/
 
 .MaatsOwnerFunctions button:after,
  .checkAdminHandlerWrapper button:after,
@@ -489,10 +522,101 @@ code {
   background-color: #fff;
 }
 
+/* *****
+/* Rendered Product Design
+/* ***** */
+
+.setPriceRender{
+  margin: 0 auto;
+  width: 70%;
+  display: inline-block;
+}
+
+.setPriceRender .productImage{
+  float:left;
+}
 
 
 
+.setPriceRender button{
+  display: inline-block;
+  display: inline-block;
+  text-align: center;
+  text-decoration: none;
+  outline: none;
+  border: 3px solid #5E1D8B;
+  padding-left: 15px;
+  padding-right: 15px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  min-width: 100px;
+  min-height: 40px;
+  border-radius: 15px;
+  background-color: #5E1D8B;
+  font-weight: 500;
+  color: #FFF;
+  transition: all 0.3s;
+  letter-spacing: 1px;
+}
 
+.setPriceRender button:hover{
+  border: 3px solid #5E1D8B;
+  background-color: #fff;
+  color: #5E1D8B;
+}
+
+.productInfo {
+  float: right;
+  text-align: left;
+  align-content: center;
+  width: 300px;
+  margin-top: 20px;
+  margin-bottom: 40px;
+  font-size: 20px;
+}
+
+.productInfo h2{
+  font-weight: 100;
+}
+.productInfo p{
+  font-weight: 500;
+}
+
+
+.adminOwnerDisplay{
+  font-size: 30px;
+  color: #EB6D05;
+}
+
+.adminOwnerDisplay p{
+
+}
+
+.product-functionalities button{
+  display: inline-block;
+  display: inline-block;
+  text-align: center;
+  text-decoration: none;
+  outline: none;
+  border: 3px solid #5E1D8B;
+  padding-left: 15px;
+  padding-right: 15px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  min-width: 100px;
+  min-height: 40px;
+  border-radius: 15px;
+  background-color: #5E1D8B;
+  font-weight: 500;
+  color: #FFF;
+  transition: all 0.3s;
+  letter-spacing: 1px;
+}
+.product-functionalities button:hover{
+  border: 3px solid #5E1D8B;
+  background-color: #fff;
+  color: #5E1D8B;
+}
 
 /* *****
 /* Input Design
@@ -507,9 +631,9 @@ code {
   margin-left: 33%;
 }
 
-.storeOwnerFunctionsWrapper .field{
-  margin-left: 10%;
-}
+/*.storeOwnerFunctionsWrapper .field{
+  margin-left: -21.5%;
+}*/
 .field input {
   width: 100%;
   border-radius: 6px;

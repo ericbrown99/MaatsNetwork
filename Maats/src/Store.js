@@ -80,7 +80,7 @@ class Store extends Component {
         <div className="storeOwnerFunctionsWrapper">
           <h1> {storeName}Welcome {storeName} Owner! </h1>
           <h4> You can control your store from the functions below </h4>
-          <div className="storeOwnerAdminControl">
+
             <div className="createStoreAdmin">
               <h3> Manage Your Admins</h3>
               <div className="field">
@@ -118,25 +118,22 @@ class Store extends Component {
             <div className="ChangeProductPrice">
               <h3> Change the price of an existing Product </h3>
               <p> Note: {"You can't change the price of an auction product"} </p>
-              <div>
-                <div className="field">
-                  <input className="priceChangeProductId" type="text"/>
-                  <label htmlFor="register">
-                    <span> ProductId </span>
-                  </label>
-                </div>
+              <div className="field">
+                <input className="priceChangeProductId" type="text"/>
+                <label htmlFor="register">
+                  <span> ProductId </span>
+                </label>
               </div>
-                <div className="field">
-                  <input className="priceChangeNewPrice" type="text"/>
-                  <label htmlFor="register">
-                    <span> New Price (Ether) </span>
-                  </label>
-                </div>
+              <div className="field">
+                <input className="priceChangeNewPrice" type="text"/>
+                <label htmlFor="register">
+                  <span> {"New Price (Ether)"} </span>
+                </label>
+              </div>
               <button onClick={this.changeProductPriceHandler.bind(this)}>
                 Confirm Price Change
               </button>
             </div>
-          </div>
         </div>
       )
     }
@@ -200,8 +197,8 @@ class Store extends Component {
     if(res){
       return(
         <div className="storeAdminFunctionsWrapper">
-          <h1> {storeName} Admin Functions </h1>
-          <h4> Admins can manage products below </h4>
+          <h1> Welcome {storeName} Admins! </h1>
+          <h4> You can manage products below </h4>
           <div className="createProducts">
             <h3> Create a Set-Price Product </h3>
             <p>  Read: Not an Auction Product </p>
@@ -235,9 +232,12 @@ class Store extends Component {
                 <span> Reserve Price (Ether) </span>
               </label>
             </div>
-            <h4>{"Set the duration of your auction in HOURS (must be at least 1/60th of an hour)"}</h4>
             <div className="field">
               <input className="auctionDuration" type="text"/>
+              <label htmlFor="register">
+                <span> Auction Duration (Hours<strong>:</strong> > 1 Minute) </span>
+              </label>
+            </div>
             <button onClick={this.createNewAuctionHandler.bind(this)}>
               Confirm New Auction Creation
             </button>
@@ -245,10 +245,18 @@ class Store extends Component {
           <div className="addInventoryWrapper">
             <h3> Add inventory to any Set Price prodcuts </h3>
             <p> Note: you can not add inventory to Auction Products because there is only one for auction </p>
-            <h4> ProductId of product receiving more inventory </h4>
-            <input className="productInventoryId" type="text"/>
-            <h4> Amount of new inventory </h4>
-            <input className="addedInventoryAmount" type="text"/>
+            <div className="field">
+              <input className="productInventoryId" type="text"/>
+              <label htmlFor="register">
+                <span> ProductId Receiving Inventory </span>
+              </label>
+            </div>
+            <div className="field">
+              <input className="addedInventoryAmount" type="text"/>
+              <label htmlFor="register">
+                <span> Amount of New Inventroy </span>
+              </label>
+            </div>
             <button onClick={this.addInventoryHandler.bind(this)}>
               Confirm Added Inventory
             </button>
@@ -338,6 +346,7 @@ class Store extends Component {
               account={this.state.account}
               admins={this.state.admins}
               storeOwner={this.state.storeOwner}
+              storeNumber={this.state.indexed}
             />
           </div>
         )
@@ -350,8 +359,8 @@ class Store extends Component {
         <ul>
           {products.map((n,index) => {
             return(
-              <div className="ProductsRendering">
-                <div key={index} className="productInList">
+              <div key ={index} className="ProductsRendering">
+                <div  className="productInList">
                   <button onClick={() => {this.renderProductHandler(n,index)}}>
                   <div className="productImage">
                     <img src={"/store-" + this.state.indexed + "-product-" + index + ".png"}/>
@@ -420,7 +429,7 @@ class Store extends Component {
                   <div> {this.displayProductsHandler()} </div>
                   }
                 </div>
-                : <div> ... loading ... </div>
+                : <div className="loading"> ... loading ... </div>
               }
             </div>
           </div>
@@ -429,7 +438,7 @@ class Store extends Component {
              <div>
                 {this.checkStoreOwnerHandler()}
               </div>
-              : <div> ...loading </div>
+              : <div className="loading"> ...loading... </div>
             }
           </div>
           <div className="storeAdminDisplay">
@@ -437,7 +446,7 @@ class Store extends Component {
              <div>
                 {this.checkStoreAdminHandler()}
               </div>
-              : <div> loading... </div>
+              : <div  className="loading"> ...loading... </div>
             }
           </div>
         </div>

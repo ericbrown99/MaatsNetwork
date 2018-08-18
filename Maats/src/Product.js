@@ -15,12 +15,14 @@ class Product extends Component {
       account: this.props.account,
       admins: this.props.admins,
       storeOwner: this.props.storeOwner,
+      storeNumber: this.props.storeNumber,
       auctionId: null,
       price: null,
       reservePrice: null,
       duration: null,
       inventory: null,
       itemsBought: null,
+
     }
   }
 
@@ -103,22 +105,32 @@ class Product extends Component {
     account === this.state.storeOwner ? res = true : null ;
     console.log(this.state.storeOwner)
     if(res){
-      return(
-      <div className="product functionalities">
-        <h2> Ship Purchased Items To Receive Funds</h2>
-        <ul>
-          {itemsBought.map((n,index) => {
-            return(
-                <div key={index}>
-                <button onClick={() => {this.shipProductHandler(n)}}> Ship Product Item {n} </button>
-                </div>
-            )
-          })}
-        </ul>
-      </div>
-    )
+      if(itemsBought.length <  1){
+        return(
+          <div className="adminOwnerProductWrapper">
+            <h3>Owner: Ship Sold Products to Receive Funds </h3>
+          <p> there are no product items to be shipped at this time </p>
+          </div>)
+      }else{
+        return(
+          <div className="adminOwnerProductWrapper">
+            <h3> Owner: Ship Sold Products to Receive Funds </h3>
+          <div className="product-functionalities">
+            <ul>
+              {itemsBought.map((n,index) => {
+                return(
+                    <div key={index}>
+                    <button onClick={() => {this.shipProductHandler(n)}}> Ship Product Item {n} </button>
+                    </div>
+                )
+              })}
+            </ul>
+          </div>
+          </div>
+        )
+      }}
     }
-  }
+
 
   shipProductHandler = (n) =>{
     const contract = this.state.contract
@@ -137,18 +149,26 @@ class Product extends Component {
     const account = this.state.account
     const productId = this.state.productId
     const storeName = this.state.storeName
+    const storeNumber = this.state.storeNumber
     const web3 = this.state.web3
     let price = this.state.web3.fromWei(this.state.price, "ether");
 
 
     return(
       <div className="setPriceRender">
-        <h2> {"Product number: " + productId} </h2>
-        <p> {"Price: " + price} </p>
-        <p> { this.state.inventory > 0 ?
-          "Current Inventory " + this.state.inventory
-          : "This product is out of stock :( "}
-        </p>
+        <div  className="productInList">
+          <div className="productImage">
+            <img src={"/store-" + storeNumber + "-product-" + productId + ".png"}/>
+          </div>
+        </div>
+        <div className = "productInfo">
+          <h2> {"Product number: " + productId} </h2>
+          <p> {"Price:  " + price + "(Ether)"} </p>
+          <p> { this.state.inventory > 0 ?
+            "Current Inventory: " + this.state.inventory
+            : "This product is out of stock :( "}
+          </p>
+        </div>
         { this.state.inventory > 0 ?
           <button onClick={ () => {
             contract.buyItem(productId, storeName, {from: account, value:this.state.price})
@@ -238,7 +258,6 @@ class Product extends Component {
     return(
       <div className="productInstance">
         <div className="productWrapper">
-          <h3> Product {this.state.productId} </h3>
           {this.state.itemsBought !== null && this.state.auctionId !== null ?
             <div className="products-display">
               {this.state.auctionId == 0  ?
@@ -251,11 +270,7 @@ class Product extends Component {
           }
           {this.state.itemsBought !== null && this.state.storeOwner !== null ?
             <div className="adminOwnerDisplay">
-              {this.state.itemsBought.length < 1  ?
-              <p> there are no product items to be shipped at this time </p>
-              :
               <div> {this.checkAdminOwnerProductHandler()} </div>
-              }
             </div>
             : <div> ... loading ... </div>
           }
