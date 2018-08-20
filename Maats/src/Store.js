@@ -171,8 +171,9 @@ class Store extends Component {
     const account = this.state.account
     let productId = parseInt(document.querySelector(".priceChangeProductId").value,10);
     let newPrice = parseInt(document.querySelector(".priceChangeNewPrice").value,10);
+    let newPrice1 = this.state.web3.toWei(newPrice,"ether");
 
-    contract.changePrice(newPrice, productId, {from: account})
+    contract.changePrice(newPrice1, productId, {from: account})
     .then(() => alert("Price changed to " + newPrice + " successfully"))
     .catch(() => alert("Couldn't change price. Ensure that the productId is correct and that enough gas was sent with the transaction"));
   }
