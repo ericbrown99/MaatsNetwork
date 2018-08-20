@@ -52,7 +52,9 @@ class Product extends Component {
           inventory: tempInventory,
         }))
       }else{
-        if(await contract.didBid(this.state.storeOwner,productId, 0)){
+        let status1 = await contract.didBid(this.state.storeOwner,productId, 0);
+        let status2 = await contract.getItemShipped(storeName, 0, productId);
+        if(status1 || status2){
           return("*")
         }else{
           let tempPrice = await contract.getCurrentPrice(result,{from:account});
@@ -103,7 +105,6 @@ class Product extends Component {
     }
     // check if account is owner who also has access to owner functions
     account === this.state.storeOwner ? res = true : null ;
-    console.log(this.state.storeOwner)
     if(res){
       if(itemsBought.length <  1){
         return(
@@ -140,7 +141,7 @@ class Product extends Component {
 
     contract.shipItem(item,productId, {from:account})
     .then(() => alert("Product item " + item + " has been shipped!"))
-    .catch(() => alert("Couldn't ship product item " + item + ". Please ensure enough gas is sent with transaction and reload page before attempting again."))
+    /*.catch(() => alert("Couldn't ship product item " + item + ". Please ensure enough gas is sent with transaction and reload page before attempting again."))*/
   }
 
   displaySetPriceProductHandler = () =>{
@@ -152,6 +153,7 @@ class Product extends Component {
     const storeNumber = this.state.storeNumber
     const web3 = this.state.web3
     let price = this.state.web3.fromWei(this.state.price, "ether");
+    let current;
 
 
     return(
@@ -170,6 +172,7 @@ class Product extends Component {
           </p>
         </div>
         { this.state.inventory > 0 ?
+
           <button onClick={ () => {
             contract.buyItem(productId, storeName, {from: account, value:this.state.price})
             .then(() => alert("You bought product " +productId + " sucessfully!"))
@@ -212,10 +215,11 @@ class Product extends Component {
               <p> {"Current Price: " + price + " Ether"} </p>
               <p> {"Auction Reserve Price: " + this.state.reservePrice} </p>
               <p> {"Total duration of auction: " + duration + " hours"} </p>
-              <button onClick={() => {
-                contract._bid(auctionId, productId, {from: account, value:this.state.price})
+              <button onClick={async () => {
+                let priceCurrent = await this.state.contract.getCurrentPrice(auctionId,{from:account});
+                await contract._bid(auctionId, productId, {from: account, value:priceCurrent })
                 .then(() => alert("You bought product " +productId + " sucessfully!"))
-                .catch(() => alert("Couldn't buy product. Please ensure there is enough gas with the transaction."))
+                /*.catch(() => alert("Couldn't buy product. Please ensure there is enough gas with the transaction."))*/
               }}>
                 {"Buy Product Number: " + productId}
               </button>

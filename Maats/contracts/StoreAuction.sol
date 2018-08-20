@@ -162,6 +162,7 @@ contract StoreAuction is StorePurchasing{
       uint storeId = storeAdminToStoreId[seller];
       Store storage current = storeIdToStore[storeId];
       current.products[_productId].items[0] = ItemStatus.Bought;
+      current.products[_productId].price= uint72(price);
     //  emit LogItemBought(_productId, msg.sender,current.storeName);
       // Tell the world!
     //  emit AuctionSuccessful(_productId, price, msg.sender);

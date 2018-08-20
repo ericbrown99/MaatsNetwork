@@ -178,7 +178,7 @@ import "./StoreAuction.sol";
     view
     returns(uint256){
         Auction storage auction = auctionIdToAuction[auctionId];
-        return now;
+        return now ;
     }
 
 

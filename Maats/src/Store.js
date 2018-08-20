@@ -302,7 +302,7 @@ class Store extends Component {
     contract.createAuctionProduct(web3.toWei(initialPrice,"ether"),web3.toWei(reservePrice,"ether"),durationSecs,{from:account})
     .then(() =>{ alert("Auction successfully created with initial price: "
       + initialPrice + " and reserve price: " + reservePrice
-      + "and has a duration of: " + duration + " hours.")})
+      + " and has a duration of: " + duration + " hours.")})
     .catch(() => {alert("Couldn't create auction. Ensure that duration is greater than 1 minute and that enough gas was sent with the transaction")})
   }
 
