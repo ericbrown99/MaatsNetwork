@@ -26,6 +26,15 @@ code {
 .loading{
   background-color: inherit;
   height: 500px;
+  text-align: center;
+  font-size: 30px;
+  font-weight: 400;
+  padding-top: 50px;
+}
+
+.admin-display .loading,
+.owner-display .loading{
+  color: #fff;
 }
 
 .landing {
@@ -122,6 +131,11 @@ code {
   font-size: 80px;
   color: #5E1D8B;
 }
+/*
+.storesDisplayWrapper p{
+  font-size: 40px;
+  color: #5E1D8B;
+}*/
 
 .stores-display{
   width: 90%;
@@ -574,6 +588,8 @@ code {
   margin-bottom: 40px;
   font-size: 20px;
 }
+
+
 
 .productInfo h2{
   font-weight: 100;

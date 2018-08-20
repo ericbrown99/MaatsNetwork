@@ -106,16 +106,25 @@ class App extends Component {
       }).then( async (numStores) => {
         let storesTemp = []
         let i=1;
-        let name = await storeCoreInstance.getStoreName(i,{from: accounts[0]});
-        await console.log(name);
+        let name = await storeCoreInstance.getStoreName(3,{from: accounts[0]});
+        await console.log(name + "name");
+        await console.log(numStores);
         if(numStores  > 1){
           for(i; i < numStores ; i++){
             let tempObj = new Object()
             tempObj.name = await storeCoreInstance.getStoreName(i, {from:accounts[0]});
+            if(await tempObj.name === ""){
+              tempObj.render = false;
+              tempObj.name = "NoRender";
+              storesTemp[i] = tempObj;
+             continue;
+            }
+            await console.log(tempObj.name)
             tempObj.render = await false;
             storesTemp[i] = await tempObj;
           }
         }
+        await console.log(storesTemp)
         return this.setState({stores: storesTemp})
       }).then(async () =>{
         let adminsTemp = []
@@ -131,16 +140,17 @@ class App extends Component {
   }
 
   componentDidMount() {
-  this.interval = setInterval(async () => {
-    const account = this.state.account
-    const contract = this.state.contract
-    let adminsTemp = []
-    let i = 0
-    for(i; i<5; i++){
-      i= i+1
-    }
-    this.setState({increment : i }), 500000
-  })
+    if(this.state.admins !== null && this.state.contract!== 0)
+    this.interval = setInterval(async () => {
+      const account = this.state.account
+      const contract = this.state.contract
+      let adminsTemp = []
+      let i = 0
+      for(i; i<5; i++){
+        adminsTemp[i] = await contract.maatsAdmins(i,{from:account});
+      }
+      this.setState({admins : adminsTemp }), 5000
+    })
   }
 
   componentWillUnmount() {
@@ -433,6 +443,7 @@ checkMaatsOwnerHandler () {
         <h1>Open Stores</h1>
         <ul>
         {stores.map((n,index) =>{
+          if(n.name !=="NoRender")
           return(
             <div key={index} className="StoreFront" >
               <div className="logoFrame" >
@@ -523,7 +534,7 @@ checkMaatsOwnerHandler () {
                   {this.state.stores !== null ?
                     <div className="stores-display">
                       {this.state.stores < 1  ?
-                      <p> there are no stores at this time </p>
+                      <p> There are no stores at this time. </p>
                       :
                       <div className="StoresToDisplay"> {this.displayStoresHandler()} </div>
                       }

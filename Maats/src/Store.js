@@ -78,7 +78,7 @@ class Store extends Component {
     if(this.state.account === this.state.storeOwner){
       return(
         <div className="storeOwnerFunctionsWrapper">
-          <h1> {storeName}Welcome {storeName} Owner! </h1>
+          <h1> Welcome {storeName} Owner! </h1>
           <h4> You can control your store from the functions below </h4>
 
             <div className="createStoreAdmin">
@@ -284,7 +284,7 @@ class Store extends Component {
     price = web3.toWei(price,"ether");
 
     contract.createSetPriceProduct(price,initialInventory,{from:account})
-    .then(() => alert("New product created with price: " + price + " and an initial inventory of: " + initialInventory))
+    .then(() => alert("New product created with price: " + web3.fromWei(price,"ether") + " and an initial inventory of: " + initialInventory))
     .catch(() => alert("Couldn't create new product. Ensure that enough gas was sent with transaction."))
   }
 
@@ -384,7 +384,6 @@ class Store extends Component {
     tempStores[index].render = false;
 
     this.setState({stores:tempStores})
-    .then(this.renderStoreHandler())
   }
 
   renderProductHandler = (product, index) =>{

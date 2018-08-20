@@ -144,7 +144,7 @@ contract StoreAuction is StorePurchasing{
       // Check that the incoming bid is higher than the current
       // price
       uint256 value = msg.value;
-      uint256 price = _currentPrice(auction);
+      uint256 price =_currentPrice(auction);
       require(value >= price);
 
       // Grab a reference to the seller before the auction struct
@@ -162,9 +162,9 @@ contract StoreAuction is StorePurchasing{
       uint storeId = storeAdminToStoreId[seller];
       Store storage current = storeIdToStore[storeId];
       current.products[_productId].items[0] = ItemStatus.Bought;
-      emit LogItemBought(_productId, msg.sender,current.storeName);
+    //  emit LogItemBought(_productId, msg.sender,current.storeName);
       // Tell the world!
-      emit AuctionSuccessful(_productId, price, msg.sender);
+    //  emit AuctionSuccessful(_productId, price, msg.sender);
 
       return price;
 

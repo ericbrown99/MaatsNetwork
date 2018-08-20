@@ -36,11 +36,8 @@ contract("StoreCore", function(accounts){
   }
 
   async function deployStore(){
-    await coreC.makeStoreOwner(store1Owner,{
+    await coreC.createStore(store1Owner, "FirstStore",{
       from: maatsOwner
-    });
-    await coreC.createStore("FirstStore", {
-      from: store1Owner
     });
   }
 
@@ -119,27 +116,24 @@ contract("StoreCore", function(accounts){
     before(deployContract);
 
     it('Should create a Store Owner', async function(){
-      await coreC.makeStoreOwner(store1Owner,{
+      await coreC.createStore( store1Owner,"FirstStore",{
         from: maatsOwner
       });
-      const res = await coreC.isStoreOwner(store1Owner);
+      const res = await coreC.getStoreExists("FirstStore");
       assert.equal(res, true);
     });
 
     it('Should remove the owner', async function(){
-      await coreC.removeStoreOwner(store1Owner, {
+      await coreC.removeStoreOwner("FirstStore", {
         from: maatsOwner
       });
-      const res = await coreC.isStoreOwner(store1Owner);
+      const res = await coreC.getStoreExists(store1Owner);
       assert.equal(res, false);
     });
 
     it('should create store', async function(){
-      await coreC.makeStoreOwner(store2Owner,{
-        from: maatsOwner
-      });
-      await coreC.createStore("FirstStore", {
-      from: store2Owner
+      await coreC.createStore(store2Owner, "FirstStore", {
+      from: maatsOwner
       });
       const res = await coreC.getStoreExists("FirstStore");
       assert.equal(res, true);
@@ -151,12 +145,6 @@ contract("StoreCore", function(accounts){
   describe('Store Management Tests', function(){
     before(deployContract);
     before(deployStore);
-
-    it('should open the store', async function(){
-      await coreC.openStore({from: store1Owner});
-      const res = await coreC.isStoreOpen(store1Owner);
-      assert.equal(res,true);
-    });
 
     it('should create a store admin', async function(){
       await coreC.createStoreAdmin(store1Admin, {
@@ -175,10 +163,10 @@ contract("StoreCore", function(accounts){
     });
 
     it('should create product', async function(){
-      await coreC.createSetPriceProduct(100, 5, {
+      await coreC.createSetPriceProduct(1, 5, {
         from: store1Owner
       });
-      const res = await coreC.getProductExists(store1Owner);
+      const res = await coreC.getProductExists("FirstStore", 0);
       assert.equal(res, true);
     });
 
@@ -186,16 +174,17 @@ contract("StoreCore", function(accounts){
       await coreC.addInventory(0,5, {
         from: store1Owner
       });
-      const res = await coreC.getCurrentInventory(store1Owner);
+      const res = await coreC.getCurrentInventory("FirstStore", 0);
       assert.equal(res,10);
     });
 
     it('should change the price of the product', async function(){
-      await coreC.changePrice(120,0, {
+      await coreC.changePrice(2,0, {
         from: store1Owner
       });
-      const res = await coreC.getCurrentPrice(store1Owner);
-      assert.equal(res,120);
+      let res = await coreC.getCurrentSetPrice("FirstStore", 0);
+      res = res.toNumber()
+      assert.equal(res,2);
     });
   });
 
@@ -220,8 +209,13 @@ contract("StoreCore", function(accounts){
       assert.equal(res, 0);
     });
 
-    it('should ship the item and withdraw', async function(){
-    // test that shipping the item also withdraws funds
+    it('should ship the item and withdraw only funds for item shipped', async function(){
+      // test that shipping the item also withdraws funds
+      // purchase second item so funds from both items in escrow account
+      await coreC.buyItem(1,"FirstStore",{
+        value: web3.toWei(2,"ether"),
+        from: customer1
+      });
       var initialBalance = new BigNumber (web3.eth.getBalance(store1Owner));
       let shipWithdraw = await coreC.shipItem(0,0,{
         from: store1Owner
@@ -241,7 +235,7 @@ contract("StoreCore", function(accounts){
       });
 
     it('Check that the item is marked as shipped', async function(){
-      const res2 = await coreC.getItemShipped(store1Owner,0,0);
+      const res2 = await coreC.getItemShipped("FirstStore",0,0);
       assert.equal(res2,true);
     });
   });
@@ -253,10 +247,12 @@ contract("StoreCore", function(accounts){
     before(deployStore);
 
     it('Should createAuctionProduct', async function(){
-      await coreC.createAuctionProduct(1,0,600,{
+      await coreC.createAuctionProduct(web3.toWei(1,"ether"),0,1000,{
         from: store1Owner
       });
-      const res = await coreC.getAuctionExists(0);
+      let res = await coreC.getAuctionExists(1);
+      res = res.toNumber()
+      res === 0 ? res = false : res = true;
       assert.equal(res,true);
     });
 
@@ -266,9 +262,9 @@ contract("StoreCore", function(accounts){
     });
 
     it('Should let a customer bid on the auction', async function(){
-      await coreC._bid(0,0,{
+      await coreC._bid(1,0,{
         from: customer2,
-        value: web3.toWei(1, "ether")
+        value: web3.toWei(2, "ether")
       });
       const res = await coreC.didBid(store1Owner, 0, 0);
       assert.equal(res,true);
@@ -293,7 +289,7 @@ contract("StoreCore", function(accounts){
     });
 
     it('confirm that auction product was shipped', async function(){
-      const res = await coreC.getItemShipped(store1Owner,0,0);
+      const res = await coreC.getItemShipped("FirstStore",0,0);
       assert.equal(res,true);
 
     });

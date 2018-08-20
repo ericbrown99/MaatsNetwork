@@ -199,7 +199,7 @@ contract StoreManagement is StoreBase{
       current.products[_productId].price = _newPrice;
       // Let the world know about the price change!!
     //  emit LogPriceChange(_productId, current.storeName, _newPrice);
-      return(_newPrice);
+      return _newPrice;
   }
 
 

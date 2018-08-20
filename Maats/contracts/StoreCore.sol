@@ -173,6 +173,15 @@ import "./StoreAuction.sol";
         return _currentPrice(auction);
     }
 
+    function getSecondsPassed(uint auctionId)
+    public
+    view
+    returns(uint256){
+        Auction storage auction = auctionIdToAuction[auctionId];
+        return now;
+    }
+
+
     function getDuration(uint auctionId)public constant returns(uint){
       Auction storage auction = auctionIdToAuction[auctionId];
       return (auction.duration);

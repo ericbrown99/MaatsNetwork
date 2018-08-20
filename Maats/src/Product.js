@@ -190,26 +190,36 @@ class Product extends Component {
     const contract = this.state.contract
     const account = this.state.account
     const auctionId = this.state.auctionId
-    const duration = this.state.duration
+    let duration = this.state.duration
     const productId = this.state.productId
+    const storeNumber = this.state.storeNumber
     let price = this.state.web3.fromWei(this.state.price, "ether")
     let reserve = this.state.web3.fromWei(this.state.reservePrice, "ether")
+    contract.getSecondsPassed(auctionId, {from:account}).then((result) => console.log(result.toNumber()))
+    duration = duration / 3600;
 
     return(
       <div className="AuctionRender">
         { this.checkStillOnAuction() !=0 ?
-          <div>
-            <h2> {"Auction for Product: " + this.state.productId} </h2>
-            <p> {"Current Price: " + this.state.price} </p>
-            <p> {"Auction Reserve Price: " + this.state.reservePrice} </p>
-            <p> {"Total duration of auction: " + duration} </p>
-            <button onClick={() => {
-              contract._bid(auctionId, productId, {from: account, value:this.state.price})
-              .then(() => alert("You bought product " +productId + " sucessfully!"))
-              .catch(() => alert("Couldn't buy product. Please ensure there is enough gas with the transaction."))
-            }}>
-              {"Buy Product Number: " + productId}
-            </button>
+          <div className="setPriceRender">
+            <div  className="productInList">
+              <div className="productImage">
+                <img src={"/store-" + storeNumber + "-product-" + productId + ".png"}/>
+              </div>
+            </div>
+            <div className="productInfo">
+              <h2> {"Auction for Product: " + productId} </h2>
+              <p> {"Current Price: " + price + " Ether"} </p>
+              <p> {"Auction Reserve Price: " + this.state.reservePrice} </p>
+              <p> {"Total duration of auction: " + duration + " hours"} </p>
+              <button onClick={() => {
+                contract._bid(auctionId, productId, {from: account, value:this.state.price})
+                .then(() => alert("You bought product " +productId + " sucessfully!"))
+                .catch(() => alert("Couldn't buy product. Please ensure there is enough gas with the transaction."))
+              }}>
+                {"Buy Product Number: " + productId}
+              </button>
+            </div>
           </div>
           : <h2> This Auction has Completed </h2>
         }
