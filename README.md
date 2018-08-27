@@ -33,5 +33,6 @@ Set up the local blockchain on port 8545 using ganache-cli:
 **For Interacting with WebApp**: 
 
 `ganache-cli -b 2`
+
 This sets the block time to 2 seconds. We do this to ensure that ganache properly reports the 'now' variable which is used
 to calculate the price of auction products. 
