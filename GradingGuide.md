@@ -25,12 +25,12 @@ Simply use truffle test and ganache-cli
 
 For the web server please use nom's lite server by running: 
 
-npm run start
+`npm run start`
 
 ### Ganache-Cli for running App
 Please run ganache-cli with the following flag to control the block time. 
 
-ganache-cli -b 2 
+`ganache-cli -b 2 `
 
 This sets the block time to 2 seconds. This should keep grading quick and easy but also ensures that the "now" global variable registers correctly in ganache as otherwise it won't update the now variable, rendering my auction pricing logic useless. 
 
