@@ -24,7 +24,8 @@ Use npm's lite server to run the web portal (make sure you are using Firefox or 
 
 `npm run start`
 
-Set up the local blockchain on port 8545 using ganache-cli: 
+Set up the local blockchain on port 8545 using ganache-cli:
+
 **For Unit Testing**: 
 
 `ganache-cli`
