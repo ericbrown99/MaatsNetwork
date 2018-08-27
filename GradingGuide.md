@@ -36,13 +36,14 @@ This sets the block time to 2 seconds. This should keep grading quick and easy b
 
 ### Migrate
 Migrate the contracts to the ganache-cli provided blockchain.
+
 **Note:** Sometimes MetaMask can get confused when listening to local blockchains. If you run into issues with metamask communicating with the chain, stop the current blockchain, make sure MetaMask is listening to a different network (ie. main chain), restart the local blockchain. Copy and paste the seed phrase into MetaMask and then switch MetaMask back to listening for the local 8545 chain. 
 
 ### Dapp Walkthrough 
 
 Now that everything is set up, follow these steps to ensure there are no hiccups in the walkthrough process. 
 
-Important Note: Please add a 0 to the gas cost for every metaMask transaction to avoid failures do to not enough gas. For whatever reason, metaMask has a tendency to under predict the gas cost. So if it predicts the gas cost as 875, please change it to 8750!
+**Important Note:** Please add a 0 to the gas cost for every metaMask transaction to avoid failures do to not enough gas. For whatever reason, metaMask has a tendency to under predict the gas cost. So if it predicts the gas cost as 875, please change it to 8750!
 
 For UI I have already added in images for the first store. (Additional stores after this won't have as clean of a UI) They feature Bossy Chicago, directory of stores featuring women owned businesses in the Chicagland area. Bossy Chicago was started by two amazing women at Northwestern and has now grown significantly. They have done amazing work to empower these owners in the chicagoland area. Please check out what they are doing at bossychicago.com. I received permission to use their logo and product images for this project. 
 
@@ -92,9 +93,4 @@ For UI I have already added in images for the first store. (Additional stores af
 20. Now that we are done with the main tests of the Dapp, you can go back and test the functionalities we skipped such as changing the Maats owner network, removing a store and sending/withdrawing funds from the network contract. 
 
 21. Let me know if there are any concerns or troubles in your testing! I hope you enjoyed it!
-
-
-
-
-
 
