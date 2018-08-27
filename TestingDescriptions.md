@@ -50,5 +50,6 @@ Sets up 2 products which can be interacted with, both of them are SetPrice produ
 	20. Should Correctly Compute Price: Since the price of an auction product is dependent on the current time, we need to ensure that the logic for computing the price based off of the current time is correct. 
 	21. Should Let Customer Bid on Auction: ensure that a customer can bid on an auction which is still "on-auction" 
 	22. Owner should get funds when shipped: Similar test to as above but specifically for the auction product type. 
+	**Important Note**: If the server is slow, there is a chance this doesn't pass because of network costs
 	23. Confirm product was shipped: again similar to above, but for the logic chain specific to the auction product type. 
 	
