@@ -43,7 +43,7 @@ Migrate the contracts to the ganache-cli provided blockchain.
 
 Now that everything is set up, follow these steps to ensure there are no hiccups in the walkthrough process. 
 
-**Important Note:** Please add a 0 to the gas cost for every metaMask transaction to avoid failures do to not enough gas. For whatever reason, metaMask has a tendency to under predict the gas cost. So if it predicts the gas cost as 875, please change it to 8750!
+**Important Note:** Please add a 0 to the **Gas Fee for every MetaMask transaction** to avoid failures do to not enough gas. For whatever reason, metaMask has a tendency to under predict the gas cost. So if it predicts the gas cost as 8754, please change it to 87540!
 
 For UI I have already added in images for the first store. (Additional stores after this won't have as clean of a UI) They feature Bossy Chicago, directory of stores featuring women owned businesses in the Chicagland area. Bossy Chicago was started by two amazing women at Northwestern and has now grown significantly. They have done amazing work to empower these owners in the chicagoland area. Please check out what they are doing at bossychicago.com. I received permission to use their logo and product images for this project. 
 
