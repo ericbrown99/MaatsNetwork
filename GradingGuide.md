@@ -15,7 +15,7 @@ Please ensure that your virtual box ubuntu system is set up properly. If you run
 ### Clone Repo: 
 Simply clone the git repo to your local machine so you can access the folder from your cli..
 
-' git clone https://github.com/ericbrown99/MaatsNetwork '
+` git clone https://github.com/ericbrown99/MaatsNetwork `
 
 
 ### Testing: 
