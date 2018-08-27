@@ -3,9 +3,9 @@
 For ease of testing, please follow this guide to grade the Dapp. 
 
 ### Ubuntu Virtual Box: 
-Please ensure that your virtual box ubuntu system is set up properly. If you run into any errors please check that you are using the following
+Please ensure that your virtual box ubuntu system is set up properly. If you run into any errors please check that you are using the following:
 
-	* curl installed 7.50.3
+* curl installed 7.50.3
 	* nodejs version 8.11.4 installed
 	* truffle v4.1.14
 	* solidity v0.4.24
