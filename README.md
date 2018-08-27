@@ -12,6 +12,9 @@ experience a larger percentage of their revenue.
 ## How To Set It Up
 An extensive set up and use guide can be found in the GradingGuide.md file in this repo. 
 
+### ConsenSys Peer Graders
+Please use the GradingGuide.md file
+
 ### Here is the high level setup: 
 Clone this github repo to your local machine using: 
 
