@@ -46,12 +46,16 @@ contract StorePurchasing is StoreManagement{
 
   /// @dev An internal function which withdraws and sends funds to store owner
   /// @param _payee : the address of the store owner getting payed.
+  /// @param _payment : the amount of money to be withdrawn
   function withdrawEscrow(address _payee, uint72 _payment) internal{
     escrow.withdraw(_payee,_payment);
   }
 
   // this could get expensive, lead to security weaknesses, consider method with
   // index count of first "forSale" item. Make public for testing
+  /// @dev Finds the first item in array that is "ForSale"
+  /// @param _productId : product which is about to be sold
+  /// @param _storeName : store to which the product belongs
   function findFirstItemForSale(uint8 _productId, string _storeName) public view returns(uint){
     bool found = false;
     uint index;
@@ -77,7 +81,7 @@ contract StorePurchasing is StoreManagement{
   /// @param _productId : the product type being purchased
   /// @param _storeName : the unique identifer for the store which sells the product
   /// @return index : The location of the item instance being purchased
-  function buyItem(uint8 _productId,string _storeName)
+  function buyItem(uint8 _productId, string _storeName)
     public
     payable
     whenNotPaused
@@ -96,30 +100,20 @@ contract StorePurchasing is StoreManagement{
       depositEscrow(_storeOwner, value);
 
       _store.products[_productId].items[index] = ItemStatus.Bought;
-    //  emit LogItemBought( _productId, msg.sender, _store.storeName);
+
       purchaserToItem[msg.sender] = index;
 
       // update the inventory of the product type
       _store.products[_productId].inventory--;
       uint64 remaining = _store.products[_productId].inventory;
-      if(remaining <=5){
-        if(remaining ==0){
-        //  emit LogInventoryOut(_store.storeName,_productId);
-        }
-      //  emit LogInventoryLow(_store.storeName, _productId, remaining);
-      }
   }
 
   /// @dev Once an item is logged as bought, the store owner/admin can ship the
   /// item and use this function to log it has been shipped. When Item is shipped,
   /// the owner receives their deposits from escrow.
-  /// notice: right now there is a !!SECURITY!! concern becuase if the owner
-  /// has several items "bought" but not sold, they could withdraw total deposited
-  /// funds by shipping only one item. Should edit escrow contract to prevent.
   /// @param _itemIndex : the instance of the item to be shipped
   /// @param _productId : the product type to which the instance belongs
   /// @return shipped : simply confirms that the product has infact been shipped.
-  /// WOULD LOVE TO USE ORACLE HERE FROM SHIPPING COMPANIES!!!!
   function shipItem(uint _itemIndex,uint8 _productId)
     public
     whenNotPaused

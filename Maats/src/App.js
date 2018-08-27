@@ -560,6 +560,9 @@ checkMaatsOwnerHandler () {
                   : <div className="loading"> ...loading... </div>
                 }
               </div>
+              <div className="renderCurrentAccount">
+                {this.state.account}
+              </div>
 
             {/*  <div className="maatsOwnerAccess">
               //display owner only functions if owner

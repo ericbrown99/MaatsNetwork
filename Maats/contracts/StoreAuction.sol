@@ -13,7 +13,6 @@ contract StoreAuction is StorePurchasing{
   /// @dev Emit when a new auction type product is created:
   event LogNewAuctionProduct(uint _auctionId,string indexed _storeName);
   event AuctionCreated(uint auctionId, uint256 startingPrice, uint256 endingPrice, uint256 duration);
-
   /// @dev Emit when a new auction executes successfully
   event AuctionSuccessful(uint8 productId, uint256 totalPrice, address winner);
   /// @dev Emit when the auction is cancelled
@@ -42,8 +41,6 @@ contract StoreAuction is StorePurchasing{
       // NOTE: 0 if this auction has been concluded
       uint64 startedAt;
   }
-
-
 
   /// @dev Internal function for auctioning products.
   /// @param _startingPrice : the starting price for the Dutch Auction
@@ -109,7 +106,10 @@ contract StoreAuction is StorePurchasing{
   }
 
 
-  /// function for testing successful bid
+  /// @dev function for testing successful bid on a product
+  /// @param ownerofproduct address of the product owner
+  /// @param productId The product id of the product which was bought
+  /// @param itemId the item number of the specific product item which was bought
   function didBid(address ownerofproduct,uint8 productId,uint itemId)public constant returns(bool){
     uint storeId = storeAdminToStoreId[ownerofproduct];
     Store storage current = storeIdToStore[storeId];
@@ -119,6 +119,7 @@ contract StoreAuction is StorePurchasing{
       return false;
     }
   }
+
   /// @dev Allows customers to "bid" on a product: Dutch (reverse) auctions don't
   /// have bids since it goes from high price to low price. Bid is essentially buy.
   /// @param _auctionId : The auction which they will be bidding on
@@ -129,7 +130,6 @@ contract StoreAuction is StorePurchasing{
       whenNotPaused
       returns (uint256)
   {
-
 
       // Get a reference to the auction struct
       Auction storage auction = auctionIdToAuction[_auctionId];
@@ -142,7 +142,7 @@ contract StoreAuction is StorePurchasing{
 
 
       // Check that the incoming bid is higher than the current
-      // price
+      // price of the auction product
       uint256 value = msg.value;
       uint256 price =_currentPrice(auction);
       require(value >= price);
@@ -151,24 +151,18 @@ contract StoreAuction is StorePurchasing{
       // gets deleted.
       address seller = auction.seller;
 
-
       // The bid is good! Remove the auction before sending the fees
       // to the sender so we can't have a reentrancy attack.
       _removeAuction(_auctionId);
 
       depositEscrow(seller,value);
 
-
       uint storeId = storeAdminToStoreId[seller];
       Store storage current = storeIdToStore[storeId];
       current.products[_productId].items[0] = ItemStatus.Bought;
       current.products[_productId].price= uint72(price);
-    //  emit LogItemBought(_productId, msg.sender,current.storeName);
-      // Tell the world!
-    //  emit AuctionSuccessful(_productId, price, msg.sender);
 
       return price;
-
   }
 
   /// @dev Creates the auction product and immediately puts it on auction.
@@ -214,8 +208,6 @@ contract StoreAuction is StorePurchasing{
       totalAuctions = totalAuctions + 1;
       createAuction( _startingPrice, _endingPrice,_duration,seller,_auctionId);
 
-      // Let the world know about the new product!
-    //  emit LogNewAuctionProduct(_auctionId, current.storeName);
       return(auctionId);
     }
 
@@ -226,7 +218,6 @@ contract StoreAuction is StorePurchasing{
       returns (uint256)
   {
       uint256 secondsPassed = now - _auction.startedAt;
-
       //call to internal function
       return _computeCurrentPrice(
           _auction.startingPrice,
@@ -237,9 +228,9 @@ contract StoreAuction is StorePurchasing{
   }
 
   /// @dev Computes the current price of an auction. Factored out
-  ///  from _currentPrice so we can run extensive unit tests.
-  ///  When testing, make this function public and turn on
-  ///  `Current price computation` test suite.
+  /// from _currentPrice so we can run extensive unit tests.
+  /// When testing, make this function public and turn on
+  /// Current price computation` test suite.
   function _computeCurrentPrice(
       uint256 _startingPrice,
       uint256 _endingPrice,

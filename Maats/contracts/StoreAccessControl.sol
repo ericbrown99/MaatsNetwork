@@ -49,7 +49,8 @@ contract StoreAccessControl{
     maatsOwner = msg.sender;
   }
 
-  ///@dev allow the current owner to transfer their ownership
+  /// @dev allow the current owner to transfer their ownership
+  /// @param _newOwner the address which will then have ownership over Maats
   function setMaatsOwner(address _newOwner) public onlyMaatsOwner whenNotPaused{
     require(_newOwner != address(0));
     address oldOwner = maatsOwner;
@@ -61,6 +62,7 @@ contract StoreAccessControl{
 
   /// @dev Only the owner can create a new network admin. Require's that the
   /// address isn't already an admin and that it isn't equal to 0.
+  /// @param _newAdmin The address being added as an admin
   function createMaatsAdmin(address _newAdmin) public onlyMaatsOwner whenNotPaused{
     require(_newAdmin != address(0));
 
@@ -85,6 +87,7 @@ contract StoreAccessControl{
   /// @dev The owner can remove an admin for any reason. The function iterates
   /// through the array until the address is found and removed. The array
   /// doesn't need to be restructured because the order of admins is insignificant
+  /// @param _revokedAdmin The address being removed as an admin
   function removeMaatsAdmin(address _revokedAdmin) public onlyMaatsOwner whenNotPaused{
     bool removed = false;
     for (uint i= 0; i <=4 && removed == false; i++){
@@ -133,6 +136,7 @@ contract StoreAccessControl{
     pause = true;
     emit Pause();
   }
+  
   /// @dev Only the owner can unpause the contract when its currently paused.
   function _unpause() onlyMaatsOwner whenPaused public{
     pause = false;

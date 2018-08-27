@@ -1,5 +1,5 @@
 const StoreCore = artifacts.require("./StoreCore.sol");
-const Escrow = artifacts.require("./payment /escrow.sol");
+const Escrow = artifacts.require("./payment/Escrow.sol");
 
 var BigNumber = require('bignumber.js');
 

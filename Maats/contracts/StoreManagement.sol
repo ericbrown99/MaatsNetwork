@@ -38,7 +38,6 @@ contract StoreManagement is StoreBase{
 ***** Store Admin Management *****
 */
 
-
   /// @dev Allow the store owner or its admins to add another admin to the store.
   /// The function checks that the address isn't already an admin and ensures that
   /// there aren't already admins. It starts at index 1 since index 0 is always
@@ -60,7 +59,6 @@ contract StoreManagement is StoreBase{
         storeAdminToStoreId[_NewAdminAddress] = storeId;
       }
     }
-
     // This assert is used to prevent a silent failure of this function call
     assert(adminCreated == true);
 
@@ -92,13 +90,11 @@ contract StoreManagement is StoreBase{
     // want to sensure there isn't a silent failure of this function call.
      assert(adminRemoved == true);
 
-  //  emit LogAdminRemoved(current.storeName, _adminAddress);
   }
 
 /*
 ****** Product Management *****
 */
-
 
   /// @dev This function creates a new product which is sold for a set price.
   /// It is added to the products mapping for the store and can only be accessed
@@ -117,9 +113,18 @@ contract StoreManagement is StoreBase{
     whenNotPaused
     onlyStoreAdmin
     returns(uint8 _productId){
+
+      // Status of initial inventory set in a loop and we don't want to exceed
+      // the block gas limit
+      require(_inventory <= 500);
+
       // fetch current store based off of the msg.sender
       uint storeId = storeAdminToStoreId[msg.sender];
       Store storage current = storeIdToStore[storeId];
+
+      // As of now, stores can't have more than 256 products due to the size
+      // of "prodCount"
+      require(current.prodCount < 256);
 
       // the product will be stored in the products mapping as to avoid
       // dissapearing during deallocation of local memory variables.
@@ -142,8 +147,6 @@ contract StoreManagement is StoreBase{
         current.products[_productId].items.push(ItemStatus.ForSale);
       }
 
-      // Let the world know there's a new product on the store!!
-    //  emit LogNewSetPriceProduct(_productId, current.storeName);
       return(_productId);
     }
 
@@ -159,17 +162,25 @@ contract StoreManagement is StoreBase{
     onlyStoreAdmin
     whenNotPaused
     returns(uint64){
+      // Security since the _newInventory variable runs a for loop and we need
+      // to stay under the block gas limit
+      require(_newInventory <= 500);
       // fetch current store based off of msg.sender
       uint storeId = storeAdminToStoreId[msg.sender];
       Store storage current = storeIdToStore[storeId];
       // add the new inventory to the current amount of inventory
-      current.products[_productId].inventory += _newInventory;
+      uint64 currentInventory = current.products[_productId].inventory;
+      //shouldn't be a problem but just in case....
+      require(currentInventory + _newInventory < 9223372036854775807);
+      current.products[_productId].inventory = currentInventory + _newInventory;
       // Ensure that product isn't of type auction since you can't add inventory
       // to a single item on auction.
       bool _isAuction = current.products[_productId].auction;
       require(_isAuction == false);
 
       // immediately set new inventory up for sale.
+      // Only loop which is not in control of Maats owner
+      // First line of this function restricts _newInventory <500
       for(uint i; i <_newInventory; i++){
         current.products[_productId].items.push(ItemStatus.ForSale);
       }
@@ -198,7 +209,7 @@ contract StoreManagement is StoreBase{
       // change price
       current.products[_productId].price = _newPrice;
       // Let the world know about the price change!!
-    //  emit LogPriceChange(_productId, current.storeName, _newPrice);
+      // emit LogPriceChange(_productId, current.storeName, _newPrice);
       return _newPrice;
   }
 

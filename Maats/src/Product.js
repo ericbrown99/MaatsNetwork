@@ -87,7 +87,7 @@ class Product extends Component {
       }
       return(await this.setState({itemsBought: tempItemsBought}))
     })
-    .catch(() => console.log("error setting up product"))
+    /*.catch(() => console.log("error setting up product"))*/
   }
 
   checkAdminOwnerProductHandler = () =>{
@@ -141,7 +141,7 @@ class Product extends Component {
 
     contract.shipItem(item,productId, {from:account})
     .then(() => alert("Product item " + item + " has been shipped!"))
-    /*.catch(() => alert("Couldn't ship product item " + item + ". Please ensure enough gas is sent with transaction and reload page before attempting again."))*/
+    .catch(() => alert("Couldn't ship product item " + item + ". Please ensure enough gas is sent with transaction and reload page before attempting again."))
   }
 
   displaySetPriceProductHandler = () =>{
@@ -198,7 +198,6 @@ class Product extends Component {
     const storeNumber = this.state.storeNumber
     let price = this.state.web3.fromWei(this.state.price, "ether")
     let reserve = this.state.web3.fromWei(this.state.reservePrice, "ether")
-    contract.getSecondsPassed(auctionId, {from:account}).then((result) => console.log(result.toNumber()))
     duration = duration / 3600;
 
     return(
