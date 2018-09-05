@@ -17,6 +17,7 @@ Simply clone the git repo to your local machine so you can access the folder fro
 
 ` git clone https://github.com/ericbrown99/MaatsNetwork `
 
+Then cd into the `/Maats` folder.
 
 ### Testing: 
 Simply use truffle test and ganache-cli 
