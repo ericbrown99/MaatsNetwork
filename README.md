@@ -20,7 +20,7 @@ Clone this github repo to your local machine using:
 
 `git clone https://github.com/ericbrown99/MaatsNetwork `
 
-Use npm's lite server to run the web portal (make sure you are using Firefox or Chrome with the MetaMask extension
+Use npm's lite server to run the web portal (make sure you are using Firefox or Chrome with the MetaMask extension)
 
 `npm run start`
 
@@ -36,3 +36,6 @@ Set up the local blockchain on port 8545 using ganache-cli:
 
 This sets the block time to 2 seconds. We do this to ensure that ganache properly reports the 'now' variable which is used
 to calculate the price of auction products. 
+
+**Migrate**
+After setting up the local blockchain, use `truffle migrate` to migrate the contracts onto the chain.
