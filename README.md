@@ -40,3 +40,7 @@ to calculate the price of auction products.
 **Migrate**:
 
 After setting up the local blockchain, use `truffle migrate` to migrate the contracts onto the chain.
+
+**MetaMask Setup**:
+
+Once you have set up the local blockchain, copy the seed phrase so that we can use MetaMask to interact with the chain. Open MetaMask and choose "Import using account seed phrase". Make sure that MetaMask is listening to LocalHost 8545.
