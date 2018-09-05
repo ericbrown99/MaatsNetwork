@@ -37,5 +37,6 @@ Set up the local blockchain on port 8545 using ganache-cli:
 This sets the block time to 2 seconds. We do this to ensure that ganache properly reports the 'now' variable which is used
 to calculate the price of auction products. 
 
-**Migrate**
+**Migrate**:
+
 After setting up the local blockchain, use `truffle migrate` to migrate the contracts onto the chain.
